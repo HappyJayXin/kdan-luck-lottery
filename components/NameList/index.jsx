@@ -2,8 +2,8 @@ import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { setLotteryList } from '../../slice/mainSlice';
-import { shuffle } from '../../utility';
+import { setLotteryList, setPickOutCount, setWinnerList, setAllWinnerList } from '../../slice/mainSlice';
+import { shuffle, copyTextToClipboard } from '../../utility';
 
 const Wrapper = styled.div`
   position: absolute;
@@ -32,6 +32,7 @@ const ListBtn = styled.div`
   justify-content: center;
   align-items: center;
   cursor: pointer;
+  font-size: 12px;
 `;
 
 const Textarea = styled.textarea`
@@ -39,12 +40,22 @@ const Textarea = styled.textarea`
   border-radius: 10px;
   outline: none;
   padding: 5px 10px;
-  height: 200px;
+  height: 180px;
   width: 270px;
+  font-size: 14px;
+`;
+
+const Input = styled.input`
+  border: #5A1730 3px solid;
+  border-radius: 10px;
+  outline: none;
+  padding: 5px 10px;
+  width: 270px;
+  font-size: 14px;
 `;
 
 const List = styled.div`
-  height: calc(100vh - 288px);
+  height: calc(100vh - 360px);
   overflow: scroll;
 
   li {
@@ -54,52 +65,156 @@ const List = styled.div`
   }
 `;
 
+const Head = styled.div`
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const DeleteButton = styled.button`
+  font-size: 1rem;
+  padding: 0.35rem 0.75rem;
+  text-align: center;
+  border-radius: 8px;
+  background-color: #dc3545;
+  color: #ffffff;
+  border: 0;
+  margin-left: 12px;
+  cursor: pointer;
+`;
+
+const SubmitWrapper = styled.div`
+  display: flex;
+  justify-content: flex-end;
+`;
+
+const SubmitButton = styled.button`
+  font-size: 1rem;
+  padding: 0.35rem 0.75rem;
+  text-align: center;
+  border-radius: 8px;
+  background-color: #198754;
+  color: #ffffff;
+  border: 0;
+  margin-left: 12px;
+  cursor: pointer;
+`;
+
+const CopyButton = styled.button`
+  font-size: 1rem;
+  padding: 0.35rem 0.75rem;
+  text-align: center;
+  border-radius: 8px;
+  background-color: #6c757d;
+  color: #ffffff;
+  border: 0;
+  margin-left: 12px;
+  cursor: pointer;
+`;
+
 const NameList = () => {
   const [isActive, setActive] = useState(false);
   const [value, setValue] = useState('');
   const textareaRef = useRef(null);
 
-  const lotteryList = useSelector((state) => state.main.lotteryList);
-  const winnerList = useSelector((state) => state.main.winnerList);
+  const { lotteryList, winnerList, allWinnerList, pickOutCount } = useSelector((state) => state.main);
   const dispatch = useDispatch();
 
   const handleClick = () => {
     setActive((currentState) => !currentState)
   }
 
-  const handleChange = (e) => {
+  const handleNameListChange = (e) => {
     setValue(e.target.value);
   }
 
   const handleKeyDown = (e) => {
-    if(e.key === "Enter" && textareaRef.current.value.trim() !== ""){
+    if(e.key === "Enter"){
+      handleSubmit();
+    }
+  }
+
+  const handleSubmit = () => {
+    if(textareaRef.current.value.trim() !== ""){
       const list = textareaRef.current.value.trim().split(",");
-      const randomList = shuffle(list);
+      const randomList = shuffle(lotteryList.concat(list));
       setValue('');
       dispatch(setLotteryList(randomList));
     }
   }
 
+  const handlePickOutChange = (e) => {
+    dispatch(setPickOutCount(e.target.value <= 0 ? 1 : e.target.value));
+  }
+
+  const handleRemoveWinnerList = () => {
+    dispatch(setWinnerList([]));
+  }
+
+  const handleRemoveAllWinnerList = () => {
+    dispatch(setAllWinnerList([]));
+  }
+
+  const handleRemoveLotteryList = () => {
+    dispatch(setLotteryList([]));
+  }
+
+  const handleCopy = () => {
+    const text = winnerList.join(',');
+    copyTextToClipboard(text);
+  }
+
   return (
-    <Wrapper style={ isActive ? { left: '0px' } : {} }>
+    <Wrapper style={isActive ? { left: '0px' } : {}}>
+      <label htmlFor='name_list_textfield'>輸入抽獎名單</label>
       <Textarea
+        id="name_list_textfield"
         ref={textareaRef}
         type="text"
         onKeyDown={handleKeyDown}
-        onChange={handleChange}
+        onChange={handleNameListChange}
         value={value}
       />
+      <SubmitWrapper>
+        <SubmitButton onClick={handleSubmit}>送出</SubmitButton>
+      </SubmitWrapper>
+      <label htmlFor='pick_out_count_textfield'>抽幾個幸運兒</label>
+      <Input id="pick_out_count_textfield" type="number" value={pickOutCount} onChange={handlePickOutChange} />
       <ListBtn onClick={handleClick}>
         <i className="fas fa-address-book fa-2x"></i>
       </ListBtn>
       <List>
-        <h4>得獎名單</h4>
+        <Head>
+          <h4>當前得獎名單</h4>
+          <DeleteButton onClick={handleRemoveWinnerList}>
+            清除
+          </DeleteButton>
+          <CopyButton onClick={handleCopy}>
+            複製
+          </CopyButton>
+        </Head>
         <ol>
           {winnerList.map((ele, index) => (
-            <li key={`winner_${index}`}>{ele}</li>
+            <li key={`cur_winner_${index}`}>{ele}</li>
           ))}
         </ol>
-        <h4>抽獎名單</h4>
+        <Head>
+          <h4>全部得獎名單</h4>
+          <DeleteButton onClick={handleRemoveAllWinnerList}>
+            清除
+          </DeleteButton>
+        </Head>
+        <ol>
+          {allWinnerList.map((ele, index) => (
+            <li key={`all_winner_${index}`}>{ele}</li>
+          ))}
+        </ol>
+        <Head>
+          <h4>抽獎名單</h4>
+          <DeleteButton onClick={handleRemoveLotteryList}>
+            清除
+          </DeleteButton>
+        </Head>
         <ol>
           {lotteryList.map((ele, index) => (
             <li key={`lottery_${index}`}>{ele}</li>

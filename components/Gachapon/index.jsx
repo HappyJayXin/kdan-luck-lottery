@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useSelector, useDispatch } from 'react-redux';
 
-import { setActive, setOpened, setWinner, setLotteryList, setWinnerList } from '../../slice/mainSlice';
+import {
+  setActive, setOpened, setWinnerList, setAllWinnerList, setLotteryList
+} from '../../slice/mainSlice';
 
 const Container = styled.div`
   display: flex;
@@ -38,7 +40,7 @@ const Egg = styled.g`
 `;
 
 const Gachapon = () => {
-  const { isActive, lotteryList, winnerList } = useSelector((state) => state.main);
+  const { isActive, lotteryList, allWinnerList, pickOutCount } = useSelector((state) => state.main);
   const dispatch = useDispatch();
 
   const [isSwitched, setSwitch] = useState(false);
@@ -51,18 +53,24 @@ const Gachapon = () => {
 
   const handleClick = () => {
     dispatch(setOpened(true));
+    const restList = [...lotteryList];
 
     if (lotteryList.length >= 1) {
-      const luckyNum = Math.floor(Math.random() * lotteryList.length);
-      const winner = lotteryList[luckyNum];
-      const restList = [...lotteryList];
-      restList.splice(luckyNum, 1);
+      const winners = [];
+
+      for (let index = 0; index < pickOutCount; index++) {
+        if (restList.length) {
+          const luckyNum = Math.floor(Math.random() * restList.length);
+          winners.push(restList[luckyNum]);
+          restList.splice(luckyNum, 1);
+        }
+      }
 
       dispatch(setLotteryList(restList));
-      dispatch(setWinner(winner));
-      dispatch(setWinnerList([...winnerList].concat(winner)));
+      dispatch(setWinnerList(winners));
+      dispatch(setAllWinnerList([...allWinnerList].concat(winners)));
     } else {
-      dispatch(setWinner("抽完惹"));
+      dispatch(setWinnerList([ "抽完惹" ]));
     }
   }
 

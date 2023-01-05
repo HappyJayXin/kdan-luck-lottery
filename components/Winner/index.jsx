@@ -17,18 +17,31 @@ const Mask = styled.div`
   display: none;
   transition: opacity 5s 5s linear;
 `;
-const WinnerEle = styled.div`
+const WinnerContainer = styled.div`
   width: 400px;
-  height: 150px;
+  min-height: 150px;
+  max-height: 500px;
   background-color: #FEFFF9;
   margin-bottom: 50px;
   color: #000000;
   font-family: 'Noto Sans TC', sans-serif;
   font-size: 30px;
   text-align: center;
-  line-height: 150px;
   box-shadow: 1px 4px 5px rgba(76, 87, 96, 0.3);
   border: #000000 2px solid;
+  border-radius: 8px;
+  overflow: scroll;
+  padding: 24px;
+  box-sizing: border-box;
+
+  ol {
+    margin: 20px 0;
+  }
+
+  li {
+    margin: 0;
+    padding: 0;
+  }
 `;
 
 const Wrapper = styled.div`
@@ -52,7 +65,7 @@ const CloseBtn = styled.div`
 
 const Winner = () => {
   const isOpened = useSelector((state) => state.main.isOpened);
-  const winnerName = useSelector((state) => state.main.winnerName);
+  const winnerList = useSelector((state) => state.main.winnerList);
   const dispatch = useDispatch();
 
   const handleClick = () => {
@@ -67,7 +80,11 @@ const Winner = () => {
           <CloseBtn onClick={handleClick}>
             <i className="fas fa-times fa-2x"></i>
           </CloseBtn>
-          <WinnerEle>{winnerName}</WinnerEle>
+          <WinnerContainer>
+            <ol>
+              {winnerList.map((ele, index) => <li key={`winner_${index}`}>{ele}</li>)}
+            </ol>
+          </WinnerContainer>
           <svg style={{ width: '200px' }} viewBox="0 0 439 215" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M295.5 14.0103C400.3 15.2103 429.167 117.51 430.5 168.51C338.1 208.51 207.667 185.177 154 168.51C157.5 116.51 190.7 12.8103 295.5 14.0103Z" fill="white" stroke="#531028" strokeWidth="13" strokeLinecap="round" strokeLinejoin="round"/>
             <path d="M99.1013 198.787C-10.8987 165.987 1.26801 68.7865 21.1013 24.2865C152.701 -28.5135 247.268 59.6199 278.101 110.287C264.268 153.453 209.101 231.587 99.1013 198.787Z" fill="#F3D478"/>

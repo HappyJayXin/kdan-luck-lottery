@@ -5,9 +5,10 @@ export const mainSlice = createSlice({
   initialState: {
     isActive: false,
     isOpened: false,
-    winnerName: '',
-    lotteryList: [],
     winnerList: [],
+    lotteryList: [],
+    allWinnerList: [],
+    pickOutCount: 1,
   },
   reducers: {
     setActive: (state, action) => {
@@ -19,11 +20,14 @@ export const mainSlice = createSlice({
     setLotteryList: (state, action) => {
       state.lotteryList = action.payload;
     },
-    setWinner: (state, action) => {
-      state.winnerName = action.payload;
-    },
     setWinnerList: (state, action) => {
       state.winnerList = action.payload;
+    },
+    setAllWinnerList: (state, action) => {
+      state.allWinnerList = action.payload;
+    },
+    setPickOutCount: (state, action) => {
+      state.pickOutCount = action.payload;
     },
   },
 });
@@ -33,8 +37,9 @@ export const {
   setActive,
   setOpened,
   setLotteryList,
-  setWinner,
   setWinnerList,
+  setAllWinnerList,
+  setPickOutCount,
 } = mainSlice.actions;
 
 export default mainSlice.reducer;
