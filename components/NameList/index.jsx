@@ -148,19 +148,41 @@ const NameList = () => {
   }
 
   const handleRemoveWinnerList = () => {
-    dispatch(setWinnerList([]));
+    const result = confirm('確定要清除嗎？');
+
+    if (result) {
+      dispatch(setWinnerList([]));
+    }
   }
 
   const handleRemoveAllWinnerList = () => {
-    dispatch(setAllWinnerList([]));
+    const result = confirm('確定要清除嗎？');
+
+    if (result) {
+      dispatch(setAllWinnerList([]));
+    }
   }
 
   const handleRemoveLotteryList = () => {
-    dispatch(setLotteryList([]));
+    const result = confirm('確定要清除嗎？');
+
+    if (result) {
+      dispatch(setLotteryList([]));
+    }
   }
 
-  const handleCopy = () => {
+  const handleCopyWinnerList = () => {
     const text = winnerList.join(',');
+    copyTextToClipboard(text);
+  }
+
+  const handleCopyAllWinnerList = () => {
+    const text = allWinnerList.join(',');
+    copyTextToClipboard(text);
+  }
+
+  const handleCopyLotteryList = () => {
+    const text = lotteryList.join(',');
     copyTextToClipboard(text);
   }
 
@@ -189,7 +211,7 @@ const NameList = () => {
           <DeleteButton onClick={handleRemoveWinnerList}>
             清除
           </DeleteButton>
-          <CopyButton onClick={handleCopy}>
+          <CopyButton onClick={handleCopyWinnerList}>
             複製
           </CopyButton>
         </Head>
@@ -203,6 +225,9 @@ const NameList = () => {
           <DeleteButton onClick={handleRemoveAllWinnerList}>
             清除
           </DeleteButton>
+          <CopyButton onClick={handleCopyAllWinnerList}>
+            複製
+          </CopyButton>
         </Head>
         <ol>
           {allWinnerList.map((ele, index) => (
@@ -214,6 +239,9 @@ const NameList = () => {
           <DeleteButton onClick={handleRemoveLotteryList}>
             清除
           </DeleteButton>
+          <CopyButton onClick={handleCopyLotteryList}>
+            複製
+          </CopyButton>
         </Head>
         <ol>
           {lotteryList.map((ele, index) => (
