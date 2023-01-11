@@ -14,7 +14,7 @@ const Container = styled.div`
   position: relative;
   height: 100vh;
   width: 100vw;
-  background-image: url('/hr_event_bg.png');
+  background-image: url('/Kdan_background.png');
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
