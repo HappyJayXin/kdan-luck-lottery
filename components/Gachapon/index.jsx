@@ -11,6 +11,7 @@ const Container = styled.div`
   flex-items: center;
   position: relative;
   height: 480px;
+  transform: scale(1.5);
 `;
 
 const Switcher = styled.svg`
