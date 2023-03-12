@@ -1,6 +1,7 @@
 export const shuffle = (arr) => {
-  const n = arr.length;
-  for (let i = n - 1; i > 0; i -= 1) {
+  const len = arr.length;
+
+  for (let i = len - 1; i > 0; i -= 1) {
     const rand = Math.floor(Math.random() * (i + 1));
     [arr[i], arr[rand]] = [arr[rand], arr[i]];
   }
@@ -37,6 +38,7 @@ export const copyTextToClipboard = (text) => {
     fallbackCopyTextToClipboard(text);
     return;
   }
+
   navigator.clipboard.writeText(text).then(
     function () {
       console.log('Async: Copying to clipboard was successful!');
