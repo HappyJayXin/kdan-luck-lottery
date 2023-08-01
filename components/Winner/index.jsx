@@ -18,14 +18,14 @@ const Mask = styled.div`
   transition: opacity 5s 5s linear;
 `;
 const WinnerContainer = styled.div`
-  width: 400px;
+  min-width: 600px;
   min-height: 150px;
   max-height: 500px;
   background-color: #FEFFF9;
   margin-bottom: 50px;
   color: #000000;
   font-family: 'Noto Sans TC', sans-serif;
-  font-size: 30px;
+  font-size: 36px;
   text-align: center;
   box-shadow: 1px 4px 5px rgba(76, 87, 96, 0.3);
   border: #000000 2px solid;
