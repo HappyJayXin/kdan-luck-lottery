@@ -1,11 +1,17 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Head from 'next/head';
 import Script from 'next/script';
 import styled from 'styled-components';
+import { useSelector, useDispatch } from 'react-redux';
 
-import Gachapon from '../components/Gachapon';
+import Rocket from '../components/Rocket';
 import Winner from '../components/Winner';
 import NameList from '../components/NameList'
+import Meteors from '../components/Meteors';
+
+import {
+  setActive, setOpened, setWinnerList, setAllWinnerList, setLotteryList
+} from '../slice/mainSlice';
 
 const Container = styled.div`
   display: flex;
@@ -14,13 +20,59 @@ const Container = styled.div`
   position: relative;
   height: 100vh;
   width: 100vw;
-  background-image: url('/Kdan_background.png');
+  background-image: url('/background.png');
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
 `
 
+const GoButton = styled.button`
+  width: 100px;
+  height: 50px;
+  font-size: 24px;
+  position: absolute;
+  bottom: 20px;
+  left: calc(50% - 45px);
+  transition: transform .3s 0s linear;
+  outline: none;
+  cursor: pointer;
+  z-index: 10;
+`;
+
 export default function Home() {
+  const dispatch = useDispatch();
+  const { isActive, lotteryList, allWinnerList, pickOutCount } = useSelector((state) => state.main);
+
+  const handleClick = () => {
+    if (!isActive) {
+      dispatch(setActive(true));
+      const restList = [...lotteryList];
+
+      if (lotteryList.length >= 1) {
+        const winners = [];
+
+        for (let index = 0; index < pickOutCount; index++) {
+          if (restList.length) {
+            const luckyNum = Math.floor(Math.random() * restList.length);
+            winners.push(restList[luckyNum]);
+            restList.splice(luckyNum, 1);
+          }
+        }
+
+        dispatch(setLotteryList(restList));
+        dispatch(setWinnerList(winners));
+        dispatch(setAllWinnerList([...allWinnerList].concat(winners)));
+      } else {
+        dispatch(setWinnerList([ "抽完惹" ]));
+      }
+
+      setTimeout(() => {
+        dispatch(setActive(false))
+        dispatch(setOpened(true))
+      }, 2200);
+    }
+  }
+
   return (
     <>
       <Head>
@@ -31,9 +83,11 @@ export default function Home() {
       </Head>
       <Container>
         <Script src="https://kit.fontawesome.com/94b5ea6607.js"></Script>
-        <Gachapon />
+        <GoButton onClick={handleClick}>Go</GoButton>
+        <Rocket />
         <Winner />
         <NameList />
+        <Meteors />
       </Container>
     </>
   )
