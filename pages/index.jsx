@@ -8,6 +8,7 @@ import Rocket from '../components/Rocket';
 import Winner from '../components/Winner';
 import NameList from '../components/NameList'
 import Meteors from '../components/Meteors';
+import Planet from '../components/Planet';
 
 import {
   setActive, setOpened, setWinnerList, setAllWinnerList, setLotteryList
@@ -25,18 +26,74 @@ const Container = styled.div`
   background-size: cover;
   background-position: center;
 `
+const color = '#ff0000';
+const color_dark = `#7b0000`;
+const color_border = `#ff3030`;
+const color_text = `#fff`;
 
 const GoButton = styled.button`
-  width: 100px;
-  height: 50px;
-  font-size: 24px;
-  position: absolute;
-  bottom: 20px;
-  left: calc(50% - 45px);
-  transition: transform .3s 0s linear;
-  outline: none;
+  background: ${color};
+  border-radius: 3em;
+  border: 0;
+  border: 3px solid ${color_border};
+  color: ${color_text};
   cursor: pointer;
-  z-index: 10;
+  font-weight: bold;
+  outline: none;
+  padding: 1.25em 2em;
+  text-transform: uppercase;
+  transform-style: preserve-3d;
+  transition: all 150ms cubic-bezier(.175, .885, .32, 1.275);
+  font-size: 18px;
+
+  z-index: 40;
+  bottom: 24px;
+  left: calc(50% - 68px);
+  position: absolute;
+  
+  &::before {
+    background: ${color_dark};
+    border-radius: inherit;
+    box-shadow:
+      0 0 0 2px ${color_border},
+      0 .6em 0 0 rgba(${color}, .6);
+    content: '';
+    height: 100%;
+    left: 0;
+    position: absolute;
+    top: 0;
+    transform: translate3d(0, .75em, -1em);
+    transition: all 150ms cubic-bezier(.175, .885, .32, 1.275);
+    width: 100%;
+  }
+
+  &:active {
+    background: ${color};
+    transform: translate(0, .75em);
+
+    &::before {
+      box-shadow:
+        0 0 0 3px ${color_border},
+        0 0 ${color};
+      transform: translate3d(0, 0, -1em);
+    }
+  }
+`;
+
+const Wrapper = styled.div`
+
+`;
+
+const ButtonBG = styled.div`
+  content: '';
+  width: 320px;
+  height: 200px;
+  display: block;
+  position: absolute;
+  background-color: #050f48;
+  border-radius: 100%;
+  left: calc(50% - 160px);
+  bottom: -90px;
 `;
 
 export default function Home() {
@@ -83,11 +140,15 @@ export default function Home() {
       </Head>
       <Container>
         <Script src="https://kit.fontawesome.com/94b5ea6607.js"></Script>
-        <GoButton onClick={handleClick}>Go</GoButton>
+        <Wrapper>
+          <GoButton onClick={handleClick}>START</GoButton>
+          <ButtonBG />
+        </Wrapper>
+        <Meteors />
+        <Planet />
         <Rocket />
         <Winner />
         <NameList />
-        <Meteors />
       </Container>
     </>
   )

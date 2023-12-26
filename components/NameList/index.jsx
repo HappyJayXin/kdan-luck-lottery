@@ -12,7 +12,7 @@ const Wrapper = styled.div`
   background-color: #F8E7E4;
   height: 95vh;
   width: 300px;
-  z-index: 2;
+  z-index: 20;
   border: #5A1730 2px solid;
   transition: left .1s 0s linear;
 `;

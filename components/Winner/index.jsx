@@ -6,7 +6,7 @@ import { setActive, setOpened } from '../../slice/mainSlice';
 
 const Mask = styled.div`
   position: absolute;
-  z-index: 3;
+  z-index: 40;
   background-color: rgba(138, 139, 140, 0.8);
   width: 100%;
   height: 100vh;

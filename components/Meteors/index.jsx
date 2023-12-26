@@ -38,20 +38,20 @@ const Container = styled.div`
     transform: rotate(30deg);
     position: absolute;
     top: 23%;
-    left: 50%;
+    left: 54%;
     opacity: 0;
     animation: ${shooting} 4s linear infinite;
     animation-delay: 1s;
     
     &:nth-child(2) {
-      top: 13%;
+      top: 33%;
       left: 14%;
       border-right-width: 80px;
       animation-delay: 2s;
     }
     
      &:nth-child(3) {
-      top: 23%;
+      top: 27%;
       left: 32%;
       border-right-width: 50px;
       animation-delay: 2.5s; 
@@ -59,7 +59,7 @@ const Container = styled.div`
     
     &:nth-child(4) {
       top: 24%;
-      left: 62%;
+      left: 72%;
       border-right-width: 50px;
       animation-delay: 1.3s;
     }

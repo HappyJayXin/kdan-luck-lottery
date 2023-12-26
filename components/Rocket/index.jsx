@@ -2,12 +2,12 @@ import React, { useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
 import { gsap } from "gsap";
+import Image from 'next/image';
 
 const Container = styled.div`
   display: flex;
-  flex-items: center;
   position: relative;
-  height: fit;
+  z-index: 20;
 `;
 
 const RocketBody = styled.div`
@@ -18,6 +18,9 @@ const RocketBody = styled.div`
   background-size: contain;
   background-repeat: no-repeat;
   margin-top: 140px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 const RocketSmoke = styled.div`
@@ -70,9 +73,9 @@ const RocketSmoke = styled.div`
     }
 
     ${({ isRight }) => isRight ? `
-      right: -40px;
+      right: -30px;
     ` : `
-      left: -40px;
+      left: -30px;
       transform: rotateY(180deg);
     `}
 `;
@@ -88,7 +91,10 @@ const Rocket = () => {
 
   useEffect(() => {
     const tl = gsap.timeline({
-      onComplete: () => { tl.revert();}
+      onComplete: () => {
+        tl.revert();
+        rocket.current.style = "";
+      }
     })
   
     if (isActive) {
@@ -128,7 +134,7 @@ const Rocket = () => {
     <Container>
       
     {/* Rocket */}
-      <RocketBody ref={rocket}/>
+      <RocketBody ref={rocket} />
       <RocketSmoke className="rocket_smoke rocket_smoke_left">
         <div className="inner">
           <div></div>
