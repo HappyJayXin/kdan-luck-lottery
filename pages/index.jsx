@@ -19,6 +19,7 @@ const Container = styled.div`
   justify-content: center;
   align-items: center;
   position: relative;
+  overflow: hidden;
   height: 100vh;
   width: 100vw;
   background-image: url('/background.png');
@@ -40,15 +41,15 @@ const GoButton = styled.button`
   cursor: pointer;
   font-weight: bold;
   outline: none;
-  padding: 1.25em 2em;
+  padding: 1.25em 3em;
   text-transform: uppercase;
   transform-style: preserve-3d;
   transition: all 150ms cubic-bezier(.175, .885, .32, 1.275);
   font-size: 18px;
 
   z-index: 40;
-  bottom: 24px;
-  left: calc(50% - 68px);
+  top: 24px;
+  left: calc(50% - 86px);
   position: absolute;
   
   &::before {
@@ -81,19 +82,18 @@ const GoButton = styled.button`
 `;
 
 const Wrapper = styled.div`
-
+  position: absolute;
+  bottom: -108px;
+  z-index: 25;
 `;
 
 const ButtonBG = styled.div`
-  content: '';
-  width: 320px;
-  height: 200px;
+  width: 240px;
+  height: 240px;
   display: block;
-  position: absolute;
   background-color: #050f48;
-  border-radius: 100%;
+  border-radius: 20px;
   left: calc(50% - 160px);
-  bottom: -90px;
 `;
 
 export default function Home() {
