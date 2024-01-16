@@ -9,6 +9,7 @@ import Winner from '../components/Winner';
 import NameList from '../components/NameList'
 import Meteors from '../components/Meteors';
 import Planet from '../components/Planet';
+import { reduceArray } from '../utility';
 
 import {
   setActive, setOpened, setWinnerList, setAllWinnerList, setLotteryList
@@ -98,15 +99,25 @@ const ButtonBG = styled.div`
 
 export default function Home() {
   const dispatch = useDispatch();
-  const { isActive, lotteryList, allWinnerList, pickOutCount } = useSelector((state) => state.main);
+  const {
+    isActive,
+    lotteryList,
+    allWinnerList,
+    pickOutCount,
+    isRemovedDuplicated,
+  } = useSelector((state) => state.main);
 
   const handleClick = () => {
     if (!isActive) {
       dispatch(setActive(true));
-      const restList = [...lotteryList];
+      let restList = [...lotteryList];
 
-      if (lotteryList.length >= 1) {
+      if (restList.length >= 1) {
         const winners = [];
+
+        if (isRemovedDuplicated) {
+          restList = [...reduceArray(restList, allWinnerList)];
+        }
 
         for (let index = 0; index < pickOutCount; index++) {
           if (restList.length) {

@@ -2,7 +2,9 @@ import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { setLotteryList, setPickOutCount, setWinnerList, setAllWinnerList } from '../../slice/mainSlice';
+import {
+  setLotteryList, setPickOutCount, setWinnerList, setAllWinnerList, setIsRemoveDuplicated,
+} from '../../slice/mainSlice';
 import { shuffle, copyTextToClipboard } from '../../utility';
 
 const Wrapper = styled.div`
@@ -112,15 +114,7 @@ const CopyButton = styled.button`
   cursor: pointer;
 `;
 
-let defaultData = ""
-defaultData += '口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,';
-defaultData += '鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,';
-defaultData += '貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,';
-defaultData += '資料夾,資料夾,資料夾,資料夾,資料夾,資料夾,資料夾,資料夾,資料夾,資料夾,資料夾,資料夾,資料夾,資料夾,資料夾,資料夾,資料夾,資料夾,資料夾,資料夾,';
-defaultData += '大Jolly帆布袋,大Jolly帆布袋,大Jolly帆布袋,大Jolly帆布袋,大Jolly帆布袋,大Jolly帆布袋,大Jolly帆布袋,大Jolly帆布袋,大Jolly帆布袋,大Jolly帆布袋,大Jolly帆布袋,大Jolly帆布袋,大Jolly帆布袋,大Jolly帆布袋,大Jolly帆布袋,大Jolly帆布袋,大Jolly帆布袋,大Jolly帆布袋,大Jolly帆布袋,大Jolly帆布袋,大Jolly帆布袋,大Jolly帆布袋,大Jolly帆布袋,大Jolly帆布袋,大Jolly帆布袋,大Jolly帆布袋,大Jolly帆布袋,大Jolly帆布袋,大Jolly帆布袋,大Jolly帆布袋,';
-defaultData += '小Jolly帆布袋,小Jolly帆布袋,小Jolly帆布袋,小Jolly帆布袋,小Jolly帆布袋,小Jolly帆布袋,小Jolly帆布袋,小Jolly帆布袋,小Jolly帆布袋,小Jolly帆布袋,';
-defaultData += '鑰匙圈,鑰匙圈,鑰匙圈,鑰匙圈,鑰匙圈,鑰匙圈,鑰匙圈,鑰匙圈,鑰匙圈,鑰匙圈,鑰匙圈,鑰匙圈,鑰匙圈,鑰匙圈,鑰匙圈,鑰匙圈,鑰匙圈,鑰匙圈,鑰匙圈,鑰匙圈,鑰匙圈,鑰匙圈,鑰匙圈,鑰匙圈,鑰匙圈,鑰匙圈,鑰匙圈,鑰匙圈,鑰匙圈,鑰匙圈,鑰匙圈,鑰匙圈,鑰匙圈,鑰匙圈,鑰匙圈,鑰匙圈,鑰匙圈,鑰匙圈,鑰匙圈,鑰匙圈,鑰匙圈,鑰匙圈,鑰匙圈,鑰匙圈,鑰匙圈,鑰匙圈,鑰匙圈,鑰匙圈,鑰匙圈,鑰匙圈,';
-defaultData += '抱枕';
+const defaultData = "";
 
 const NameList = () => {
   const [isActive, setActive] = useState(false);
@@ -151,6 +145,10 @@ const NameList = () => {
       setValue('');
       dispatch(setLotteryList(randomList));
     }
+  }
+
+  const handleCheckboxChange = (e) => {
+    dispatch(setIsRemoveDuplicated(e.target.checked));
   }
 
   const handlePickOutChange = (e) => {
@@ -210,8 +208,14 @@ const NameList = () => {
       <SubmitWrapper>
         <SubmitButton onClick={handleSubmit}>送出</SubmitButton>
       </SubmitWrapper>
-      <label htmlFor='pick_out_count_textfield'>抽幾個幸運兒</label>
-      <Input id="pick_out_count_textfield" type="number" value={pickOutCount} onChange={handlePickOutChange} />
+      <div>
+        <label htmlFor='remove_duplicated_checkbox'>剔除已中獎者</label>
+        <input id="remove_duplicated_checkbox" type="checkbox" value={pickOutCount} onChange={handleCheckboxChange} />
+      </div>
+      <div>
+        <label htmlFor='pick_out_count_textfield'>抽幾個幸運兒</label>
+        <Input id="pick_out_count_textfield" type="number" value={pickOutCount} onChange={handlePickOutChange} />
+      </div>
       <ListBtn onClick={handleClick}>
         <i className="fas fa-address-book fa-2x"></i>
       </ListBtn>

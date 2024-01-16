@@ -48,3 +48,15 @@ export const copyTextToClipboard = (text) => {
     }
   );
 };
+
+export const reduceArray = (array1, array2) => {
+  // Remove duplicates from array2
+  array2.forEach(function (value) {
+    var index = array1.indexOf(value);
+    if (index !== -1) {
+      array1.splice(index, 1);
+    }
+  });
+
+  return array1;
+};
