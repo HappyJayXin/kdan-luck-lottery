@@ -7,8 +7,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import Rocket from '../components/Rocket';
 import Winner from '../components/Winner';
 import NameList from '../components/NameList'
-import Meteors from '../components/Meteors';
-import Planet from '../components/Planet';
+// import Meteors from '../components/Meteors';
+// import Planet from '../components/Planet';
 import { reduceArray } from '../utility';
 
 import {
@@ -155,8 +155,8 @@ export default function Home() {
           <GoButton onClick={handleClick}>START</GoButton>
           <ButtonBG />
         </Wrapper>
-        <Meteors />
-        <Planet />
+        {/* <Meteors /> */}
+        {/* <Planet /> */}
         <Rocket />
         <Winner />
         <NameList />
