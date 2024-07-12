@@ -1,4 +1,7 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+Kdan 抽獎系統
+
+## 介紹
+這是一個抽獎系統，可以讓用戶自行設定獎項與抽出的數量
 
 ## Getting Started
 
@@ -10,27 +13,17 @@ npm run dev
 yarn dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 部署
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+目前是部署在 Roy 自己的 vercel 雲端平台上
+[http://lottery-fawn.vercel.app](http://lottery-fawn.vercel.app)
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
-
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
-
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+## 功能
+* 新增獎項
+  字串並用半形comma做分隔，例：王大明,李大頭
+* 設定單次抽獎數量
+* 剔除中獎者
+  中獎名單裡若已有相同項目被抽出，在下一次抽獎時將不會被抽出
+* 顯示得獎名單
+* 刪除得獎名單
+* 複製得獎名單

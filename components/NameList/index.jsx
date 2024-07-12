@@ -209,7 +209,7 @@ const NameList = () => {
         <SubmitButton onClick={handleSubmit}>送出</SubmitButton>
       </SubmitWrapper>
       <div>
-        <label htmlFor='remove_duplicated_checkbox'>剔除已中獎者</label>
+        <label htmlFor='remove_duplicated_checkbox'>剔除重複中獎項目（者）</label>
         <input id="remove_duplicated_checkbox" type="checkbox" value={pickOutCount} onChange={handleCheckboxChange} />
       </div>
       <div>
