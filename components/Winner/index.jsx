@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
-
 import { setActive, setOpened } from '../../slice/mainSlice';
 
 const Mask = styled.div`
@@ -42,9 +41,10 @@ const WinnerContainer = styled.div`
   li {
     margin: 0;
     padding: 0;
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.6s ease-in, transform 0.6s ease-in;
+    opacity: ${(props) => (props.isAnimating ? 0 : 1)};
+    transform: ${(props) => (props.isAnimating ? 'translateY(20px)' : 'none')};
+    transition: ${(props) =>
+      props.isAnimating ? 'opacity 0.6s ease-in, transform 0.6s ease-in' : 'none'};
   }
 
   .show {
@@ -74,11 +74,12 @@ const CloseBtn = styled.div`
 
 const Winner = () => {
   const isOpened = useSelector((state) => state.main.isOpened);
+  const isAnimating = useSelector((state) => state.main.isAnimating);
   const winnerList = useSelector((state) => state.main.winnerList);
   const dispatch = useDispatch();
 
   const [visibleWinners, setVisibleWinners] = useState(0);
-  const [isAnimating, setIsAnimating] = useState(false);
+  const [isAnimationComplete, setIsAnimationComplete] = useState(false);
   const winnerListRef = useRef(null);
   const winnerRefs = useRef([]);
 
@@ -91,10 +92,18 @@ const Winner = () => {
   useEffect(() => {
     if (isOpened && winnerList.length > 0) {
       setVisibleWinners(0);
-      setIsAnimating(true);
+      setIsAnimationComplete(false);
+
+      if (!isAnimating) {
+        setVisibleWinners(winnerList.length);
+        setIsAnimationComplete(true);
+        return;
+      }
+
+      // row-by-row animation
       let currentIndex = 0;
 
-      const animationInterval = setInterval(() => {
+      const rowInterval = setInterval(() => {
         currentIndex += 1;
         setVisibleWinners(currentIndex);
 
@@ -106,19 +115,19 @@ const Winner = () => {
         }
 
         if (currentIndex >= winnerList.length) {
-          clearInterval(animationInterval);
-          setIsAnimating(false);
+          clearInterval(rowInterval);
+          setIsAnimationComplete(true);
         }
       }, 500);
 
       return () => {
-        clearInterval(animationInterval)
+        clearInterval(rowInterval);
       };
     }
-  }, [isOpened, winnerList]);
+  }, [isOpened, winnerList, isAnimating]);
 
   useEffect(() => {
-    if (visibleWinners > 0 && winnerRefs.current[visibleWinners - 1]) {
+    if (isAnimating && visibleWinners > 0 && winnerRefs.current[visibleWinners - 1]) {
       winnerRefs.current[visibleWinners - 1].current.scrollIntoView({
         behavior: 'smooth',
         block: 'nearest',
@@ -127,24 +136,22 @@ const Winner = () => {
   }, [visibleWinners]);
 
   const handleClick = () => {
-    if (!isAnimating) {
-      setVisibleWinners(0);
-      dispatch(setOpened(false));
-      dispatch(setActive(false));
-      winnerListRef.current.scrollTop = 0;
-    }
+    setVisibleWinners(0);
+    dispatch(setOpened(false));
+    dispatch(setActive(false));
+    winnerListRef.current.scrollTop = 0;
   };
 
   return (
     <>
       <Mask style={isOpened ? { display: 'flex', opacity: 100 } : {}}>
         <Wrapper>
-          {!isAnimating && (
+          {isAnimationComplete  && (
             <CloseBtn onClick={handleClick}>
               <i className="fas fa-times fa-2x"></i>
             </CloseBtn>
           )}
-          <WinnerContainer ref={winnerListRef}>
+          <WinnerContainer ref={winnerListRef} isAnimating={isAnimating}>
             <ol>
               {winnerList.map((ele, index) => (
                 <li

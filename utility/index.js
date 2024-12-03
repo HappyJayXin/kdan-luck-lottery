@@ -50,13 +50,15 @@ export const copyTextToClipboard = (text) => {
 };
 
 export const reduceArray = (array1, array2) => {
+  let newArray = [...array1]; 
+
   // Remove duplicates from array2
   array2.forEach(function (value) {
-    var index = array1.indexOf(value);
+    var index = newArray.indexOf(value);
     if (index !== -1) {
-      array1.splice(index, 1);
+      newArray.splice(index, 1);
     }
   });
 
-  return array1;
+  return newArray;
 };

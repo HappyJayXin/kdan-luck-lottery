@@ -135,6 +135,7 @@ export default function Home() {
           }
         }
 
+        // console.log({ lotteryList, pickOutCount, winners, restList, allWinnerList, isRemovedDuplicated })
         dispatch(setLotteryList(restList));
         dispatch(setWinnerList(winners));
         dispatch(setAllWinnerList([...allWinnerList].concat(winners)));

@@ -9,6 +9,7 @@ import {
   setWinnerList,
   setAllWinnerList,
   setIsRemoveDuplicated,
+  setAnimating,
 } from '../../slice/mainSlice';
 import { shuffle, copyTextToClipboard } from '../../utility';
 
@@ -158,12 +159,10 @@ const CopyButton = ({ onCopy }) => {
 const NameList = () => {
   const [isActive, setActive] = useState(false);
   const [value, setValue] = useState(defaultData);
-  const [isCopyDisabled, setCopyDisabled] = useState(false);
   const textareaRef = useRef(null);
 
-  const { lotteryList, winnerList, allWinnerList, pickOutCount } = useSelector(
-    (state) => state.main
-  );
+  const { lotteryList, isAnimating, winnerList, allWinnerList, pickOutCount, isRemovedDuplicated } =
+    useSelector((state) => state.main);
   const dispatch = useDispatch();
 
   const handleClick = () => {
@@ -191,6 +190,10 @@ const NameList = () => {
 
   const handleCheckboxChange = (e) => {
     dispatch(setIsRemoveDuplicated(e.target.checked));
+  };
+
+  const handleChangeAnimation = (e) => {
+    dispatch(setAnimating(e.target.checked));
   };
 
   const handlePickOutChange = (e) => {
@@ -254,10 +257,19 @@ const NameList = () => {
         <input
           id="remove_duplicated_checkbox"
           type="checkbox"
-          value={pickOutCount}
+          checked={isRemovedDuplicated}
           onChange={handleCheckboxChange}
         />
         <Label htmlFor="remove_duplicated_checkbox">去除重複得獎名單</Label>
+      </div>
+      <div>
+        <input
+          id="enable_animation_checkbox"
+          type="checkbox"
+          checked={isAnimating}
+          onChange={handleChangeAnimation}
+        />
+        <Label htmlFor="enable_animation_checkbox">心跳加速模式（逐列顯示結果）</Label>
       </div>
       <div>
         <Label htmlFor="pick_out_count_textfield">設定要抽出的幸運兒數量</Label>
