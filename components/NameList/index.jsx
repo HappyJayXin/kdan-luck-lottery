@@ -1,9 +1,14 @@
 import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
+import { defaultData } from './data';
 
 import {
-  setLotteryList, setPickOutCount, setWinnerList, setAllWinnerList, setIsRemoveDuplicated,
+  setLotteryList,
+  setPickOutCount,
+  setWinnerList,
+  setAllWinnerList,
+  setIsRemoveDuplicated,
 } from '../../slice/mainSlice';
 import { shuffle, copyTextToClipboard } from '../../utility';
 
@@ -11,20 +16,20 @@ const Wrapper = styled.div`
   position: absolute;
   left: -362px;
   padding: 30px 30px 0 30px;
-  background-color: #F8E7E4;
+  background-color: #f8e7e4;
   height: 95vh;
   width: 300px;
   z-index: 20;
-  border: #5A1730 2px solid;
-  transition: left .1s 0s linear;
+  border: #5a1730 2px solid;
+  transition: left 0.1s 0s linear;
 `;
 
 const ListBtn = styled.div`
   position: absolute;
-  background-color: #F8E7E4;
-  color: #5A1730;
+  background-color: #f8e7e4;
+  color: #5a1730;
   border-radius: 0 20% 20% 0;
-  border: #5A1730 2px solid;
+  border: #5a1730 2px solid;
   border-left: none;
   top: 120px;
   right: -42px;
@@ -37,8 +42,13 @@ const ListBtn = styled.div`
   font-size: 12px;
 `;
 
+const Label = styled.label`
+  margin-bottom: 4px;
+  display: inline-block;
+`;
+
 const Textarea = styled.textarea`
-  border: #5A1730 3px solid;
+  border: #5a1730 3px solid;
   border-radius: 10px;
   outline: none;
   padding: 5px 10px;
@@ -48,7 +58,7 @@ const Textarea = styled.textarea`
 `;
 
 const Input = styled.input`
-  border: #5A1730 3px solid;
+  border: #5a1730 3px solid;
   border-radius: 10px;
   outline: none;
   padding: 5px 10px;
@@ -57,11 +67,12 @@ const Input = styled.input`
 `;
 
 const List = styled.div`
-  height: calc(100vh - 360px);
+  height: calc(100vh - 390px);
   overflow: scroll;
+  margin: 8px 0 0;
 
   li {
-    color: #5A1730;
+    color: #5a1730;
     font-family: 'Noto Sans TC', sans-serif;
     margin: 10px 30px;
   }
@@ -70,19 +81,38 @@ const List = styled.div`
 const Head = styled.div`
   display: inline-flex;
   justify-content: center;
-  align-items: center;
+  gap: 20px;
 `;
 
-const DeleteButton = styled.button`
-  font-size: 1rem;
-  padding: 0.35rem 0.75rem;
-  text-align: center;
-  border-radius: 8px;
-  background-color: #dc3545;
-  color: #ffffff;
-  border: 0;
-  margin-left: 12px;
-  cursor: pointer;
+const ButtonGroup = styled.div`
+  display: flex;
+  gap: 16px;
+`;
+
+const BaseIconButton = styled.button`
+  background: none;
+  border: none;
+  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
+  font-size: 1.2rem;
+  margin: 0;
+  padding: 0;
+  transition: color 0.3s, opacity 0.3s;
+  opacity: ${({ disabled }) => (disabled ? 0.5 : 1)};
+`;
+
+const DeleteIconButton = styled(BaseIconButton)`
+  color: #dc3545;
+  &:hover {
+    color: #a71d2a;
+  }
+`;
+
+const CopyIconButton = styled(BaseIconButton)`
+  color: ${({ disabled }) => (disabled ? '#b0b0b0' : '#6c757d')};
+
+  &:hover {
+    color: ${({ disabled }) => (disabled ? '#b0b0b0' : '#495057')};
+  }
 `;
 
 const SubmitWrapper = styled.div`
@@ -91,8 +121,8 @@ const SubmitWrapper = styled.div`
 `;
 
 const SubmitButton = styled.button`
-  font-size: 1rem;
-  padding: 0.35rem 0.75rem;
+  font-size: 0.875rem;
+  padding: 0.25rem 0.5rem;
   text-align: center;
   border-radius: 8px;
   background-color: #198754;
@@ -102,58 +132,70 @@ const SubmitButton = styled.button`
   cursor: pointer;
 `;
 
-const CopyButton = styled.button`
-  font-size: 1rem;
-  padding: 0.35rem 0.75rem;
-  text-align: center;
-  border-radius: 8px;
-  background-color: #6c757d;
-  color: #ffffff;
-  border: 0;
-  margin-left: 12px;
-  cursor: pointer;
-`;
+const CopyButton = ({ onCopy }) => {
+  const [isCopyDisabled, setCopyDisabled] = useState(false);
 
-const defaultData = "貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,貼紙,鑰匙圈,鑰匙圈,鑰匙圈,鑰匙圈,鑰匙圈,鑰匙圈,鑰匙圈,鑰匙圈,鑰匙圈,鑰匙圈,鑰匙圈,鑰匙圈,鑰匙圈,鑰匙圈,鑰匙圈,鑰匙圈,鑰匙圈,鑰匙圈,鑰匙圈,鑰匙圈,鑰匙圈,鑰匙圈,鑰匙圈,鑰匙圈,鑰匙圈,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,口罩,HR帆布袋,HR帆布袋,HR帆布袋,HR帆布袋,HR帆布袋,HR帆布袋,HR帆布袋,HR帆布袋,HR帆布袋,HR帆布袋,資料夾,資料夾,資料夾,資料夾,資料夾,資料夾,資料夾,資料夾,資料夾,資料夾,資料夾,PR帆布袋,PR帆布袋,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼,鏡頭貼";
+  const handleCopy = () => {
+    if (!isCopyDisabled) {
+      if (onCopy) {
+        onCopy();
+      }
+
+      setCopyDisabled(true);
+      setTimeout(() => {
+        setCopyDisabled(false);
+      }, 1000);
+    }
+  };
+
+  return (
+    <CopyIconButton disabled={isCopyDisabled} onClick={handleCopy}>
+      <i className="fas fa-copy"></i>
+    </CopyIconButton>
+  );
+};
 
 const NameList = () => {
   const [isActive, setActive] = useState(false);
   const [value, setValue] = useState(defaultData);
+  const [isCopyDisabled, setCopyDisabled] = useState(false);
   const textareaRef = useRef(null);
 
-  const { lotteryList, winnerList, allWinnerList, pickOutCount } = useSelector((state) => state.main);
+  const { lotteryList, winnerList, allWinnerList, pickOutCount } = useSelector(
+    (state) => state.main
+  );
   const dispatch = useDispatch();
 
   const handleClick = () => {
-    setActive((currentState) => !currentState)
-  }
+    setActive((currentState) => !currentState);
+  };
 
   const handleNameListChange = (e) => {
     setValue(e.target.value);
-  }
+  };
 
   const handleKeyDown = (e) => {
-    if(e.key === "Enter"){
+    if (e.key === 'Enter') {
       handleSubmit();
     }
-  }
+  };
 
   const handleSubmit = () => {
-    if(textareaRef.current.value.trim() !== ""){
-      const list = textareaRef.current.value.trim().split(",");
+    if (textareaRef.current.value.trim() !== '') {
+      const list = textareaRef.current.value.trim().split(',');
       const randomList = shuffle(lotteryList.concat(list));
       setValue('');
       dispatch(setLotteryList(randomList));
     }
-  }
+  };
 
   const handleCheckboxChange = (e) => {
     dispatch(setIsRemoveDuplicated(e.target.checked));
-  }
+  };
 
   const handlePickOutChange = (e) => {
     dispatch(setPickOutCount(e.target.value <= 0 ? 1 : e.target.value));
-  }
+  };
 
   const handleRemoveWinnerList = () => {
     const result = confirm('確定要清除嗎？');
@@ -161,7 +203,7 @@ const NameList = () => {
     if (result) {
       dispatch(setWinnerList([]));
     }
-  }
+  };
 
   const handleRemoveAllWinnerList = () => {
     const result = confirm('確定要清除嗎？');
@@ -169,7 +211,7 @@ const NameList = () => {
     if (result) {
       dispatch(setAllWinnerList([]));
     }
-  }
+  };
 
   const handleRemoveLotteryList = () => {
     const result = confirm('確定要清除嗎？');
@@ -177,26 +219,26 @@ const NameList = () => {
     if (result) {
       dispatch(setLotteryList([]));
     }
-  }
+  };
 
   const handleCopyWinnerList = () => {
     const text = winnerList.join(',');
     copyTextToClipboard(text);
-  }
+  };
 
   const handleCopyAllWinnerList = () => {
     const text = allWinnerList.join(',');
     copyTextToClipboard(text);
-  }
+  };
 
   const handleCopyLotteryList = () => {
     const text = lotteryList.join(',');
     copyTextToClipboard(text);
-  }
+  };
 
   return (
     <Wrapper style={isActive ? { left: '0px' } : {}}>
-      <label htmlFor='name_list_textfield'>輸入抽獎名單</label>
+      <Label htmlFor="name_list_textfield">輸入抽獎名單</Label>
       <Textarea
         id="name_list_textfield"
         ref={textareaRef}
@@ -209,12 +251,22 @@ const NameList = () => {
         <SubmitButton onClick={handleSubmit}>送出</SubmitButton>
       </SubmitWrapper>
       <div>
-        <label htmlFor='remove_duplicated_checkbox'>剔除重複中獎項目（者）</label>
-        <input id="remove_duplicated_checkbox" type="checkbox" value={pickOutCount} onChange={handleCheckboxChange} />
+        <input
+          id="remove_duplicated_checkbox"
+          type="checkbox"
+          value={pickOutCount}
+          onChange={handleCheckboxChange}
+        />
+        <Label htmlFor="remove_duplicated_checkbox">去除重複得獎名單</Label>
       </div>
       <div>
-        <label htmlFor='pick_out_count_textfield'>抽幾個幸運兒</label>
-        <Input id="pick_out_count_textfield" type="number" value={pickOutCount} onChange={handlePickOutChange} />
+        <Label htmlFor="pick_out_count_textfield">設定要抽出的幸運兒數量</Label>
+        <Input
+          id="pick_out_count_textfield"
+          type="number"
+          value={pickOutCount}
+          onChange={handlePickOutChange}
+        />
       </div>
       <ListBtn onClick={handleClick}>
         <i className="fas fa-address-book fa-2x"></i>
@@ -222,12 +274,12 @@ const NameList = () => {
       <List>
         <Head>
           <h4>當前得獎名單</h4>
-          <DeleteButton onClick={handleRemoveWinnerList}>
-            清除
-          </DeleteButton>
-          <CopyButton onClick={handleCopyWinnerList}>
-            複製
-          </CopyButton>
+          <ButtonGroup>
+            <DeleteIconButton onClick={handleRemoveWinnerList}>
+              <i className="fas fa-trash-alt"></i>
+            </DeleteIconButton>
+            <CopyButton onCopy={handleCopyWinnerList} />
+          </ButtonGroup>
         </Head>
         <ol>
           {winnerList.map((ele, index) => (
@@ -236,12 +288,12 @@ const NameList = () => {
         </ol>
         <Head>
           <h4>全部得獎名單</h4>
-          <DeleteButton onClick={handleRemoveAllWinnerList}>
-            清除
-          </DeleteButton>
-          <CopyButton onClick={handleCopyAllWinnerList}>
-            複製
-          </CopyButton>
+          <ButtonGroup>
+            <DeleteIconButton onClick={handleRemoveAllWinnerList}>
+              <i className="fas fa-trash-alt"></i>
+            </DeleteIconButton>
+            <CopyButton onCopy={handleCopyAllWinnerList} />
+          </ButtonGroup>
         </Head>
         <ol>
           {allWinnerList.map((ele, index) => (
@@ -250,12 +302,12 @@ const NameList = () => {
         </ol>
         <Head>
           <h4>抽獎名單</h4>
-          <DeleteButton onClick={handleRemoveLotteryList}>
-            清除
-          </DeleteButton>
-          <CopyButton onClick={handleCopyLotteryList}>
-            複製
-          </CopyButton>
+          <ButtonGroup>
+            <DeleteIconButton onClick={handleRemoveLotteryList}>
+              <i className="fas fa-trash-alt"></i>
+            </DeleteIconButton>
+            <CopyButton onCopy={handleCopyLotteryList} />
+          </ButtonGroup>
         </Head>
         <ol>
           {lotteryList.map((ele, index) => (
@@ -264,7 +316,7 @@ const NameList = () => {
         </ol>
       </List>
     </Wrapper>
-  )
-}
+  );
+};
 
 export default NameList;
