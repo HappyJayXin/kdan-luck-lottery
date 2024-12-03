@@ -6,13 +6,17 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import Rocket from '../components/Rocket';
 import Winner from '../components/Winner';
-import NameList from '../components/NameList'
+import NameList from '../components/NameList';
 // import Meteors from '../components/Meteors';
 // import Planet from '../components/Planet';
 import { reduceArray } from '../utility';
 
 import {
-  setActive, setOpened, setWinnerList, setAllWinnerList, setLotteryList
+  setActive,
+  setOpened,
+  setWinnerList,
+  setAllWinnerList,
+  setLotteryList,
 } from '../slice/mainSlice';
 
 const Container = styled.div`
@@ -27,17 +31,17 @@ const Container = styled.div`
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
-`
+`;
 const color = '#ff0000';
 const color_dark = `#7b0000`;
 const color_border = `#ff3030`;
 const color_text = `#fff`;
 
 const GoButton = styled.button`
-  background: ${color};
+  background: ${({ isDisabled }) => (isDisabled ? '#bbb' : color)};
   border-radius: 3em;
   border: 0;
-  border: 3px solid ${color_border};
+  border: 3px solid ${({ isDisabled }) => (isDisabled ? '#999' : color_border)};
   color: ${color_text};
   cursor: pointer;
   font-weight: bold;
@@ -45,40 +49,43 @@ const GoButton = styled.button`
   padding: 1.25em 3em;
   text-transform: uppercase;
   transform-style: preserve-3d;
-  transition: all 150ms cubic-bezier(.175, .885, .32, 1.275);
+  transition: all 150ms cubic-bezier(0.175, 0.885, 0.32, 1.275);
   font-size: 18px;
 
   z-index: 40;
   top: 24px;
   left: calc(50% - 86px);
   position: absolute;
-  
+
   &::before {
-    background: ${color_dark};
+    background: ${({ isDisabled }) => (isDisabled ? '#999' : color_dark)};
     border-radius: inherit;
-    box-shadow:
-      0 0 0 2px ${color_border},
-      0 .6em 0 0 rgba(${color}, .6);
+    box-shadow: 0 0 0 2px ${({ isDisabled }) => (isDisabled ? '#888' : color_border)},
+      0 0.6em 0 0 ${({ isDisabled }) => (isDisabled ? 'rgba(0, 0, 0, 0.3)' : `rgba(${color}, .6)`)};
     content: '';
     height: 100%;
     left: 0;
     position: absolute;
     top: 0;
-    transform: translate3d(0, .75em, -1em);
-    transition: all 150ms cubic-bezier(.175, .885, .32, 1.275);
+    transform: translate3d(0, 0.75em, -1em);
+    transition: all 150ms cubic-bezier(0.175, 0.885, 0.32, 1.275);
     width: 100%;
   }
 
   &:active {
-    background: ${color};
-    transform: translate(0, .75em);
+    ${({ isDisabled }) =>
+      !isDisabled &&
+      `
+      background: ${color};
+      transform: translate(0, .75em);
 
-    &::before {
-      box-shadow:
-        0 0 0 3px ${color_border},
-        0 0 ${color};
-      transform: translate3d(0, 0, -1em);
-    }
+      &::before {
+        box-shadow:
+          0 0 0 3px ${color_border},
+          0 0 ${color};
+        transform: translate3d(0, 0, -1em);
+      }
+    `}
   }
 `;
 
@@ -99,16 +106,17 @@ const ButtonBG = styled.div`
 
 export default function Home() {
   const dispatch = useDispatch();
-  const {
-    isActive,
-    lotteryList,
-    allWinnerList,
-    pickOutCount,
-    isRemovedDuplicated,
-  } = useSelector((state) => state.main);
+  const { isActive, lotteryList, allWinnerList, pickOutCount, isRemovedDuplicated } = useSelector(
+    (state) => state.main
+  );
 
   const handleClick = () => {
     if (!isActive) {
+      if (lotteryList.length === 0) {
+        alert('抽獎名單為空，無法抽獎，請先填入抽獎者！');
+        return;
+      }
+
       dispatch(setActive(true));
       let restList = [...lotteryList];
 
@@ -130,16 +138,14 @@ export default function Home() {
         dispatch(setLotteryList(restList));
         dispatch(setWinnerList(winners));
         dispatch(setAllWinnerList([...allWinnerList].concat(winners)));
-      } else {
-        dispatch(setWinnerList([ "抽完惹" ]));
       }
 
       setTimeout(() => {
-        dispatch(setActive(false))
-        dispatch(setOpened(true))
+        dispatch(setActive(false));
+        dispatch(setOpened(true));
       }, 2200);
     }
-  }
+  };
 
   return (
     <>
@@ -152,7 +158,9 @@ export default function Home() {
       <Container>
         <Script src="https://kit.fontawesome.com/94b5ea6607.js"></Script>
         <Wrapper>
-          <GoButton onClick={handleClick}>START</GoButton>
+          <GoButton onClick={handleClick} isDisabled={lotteryList.length === 0}>
+            START
+          </GoButton>
           <ButtonBG />
         </Wrapper>
         {/* <Meteors /> */}
@@ -162,5 +170,5 @@ export default function Home() {
         <NameList />
       </Container>
     </>
-  )
+  );
 }
