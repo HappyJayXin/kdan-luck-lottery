@@ -11,6 +11,7 @@ export const mainSlice = createSlice({
     allWinnerList: [],
     pickOutCount: 1,
     isRemovedDuplicated: false,
+    currentPrize: '我就是幸運兒',
   },
   reducers: {
     setActive: (state, action) => {
@@ -37,6 +38,9 @@ export const mainSlice = createSlice({
     setPickOutCount: (state, action) => {
       state.pickOutCount = action.payload;
     },
+    setCurrentPrize: (state, action) => {
+      state.currentPrize = action.payload;
+    },
   },
 });
 
@@ -50,6 +54,7 @@ export const {
   setPickOutCount,
   setIsRemoveDuplicated,
   setAnimating,
+  setCurrentPrize,
 } = mainSlice.actions;
 
 export default mainSlice.reducer;

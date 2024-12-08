@@ -10,6 +10,7 @@ import {
   setAllWinnerList,
   setIsRemoveDuplicated,
   setAnimating,
+  setCurrentPrize,
 } from '../../slice/mainSlice';
 import { shuffle, copyTextToClipboard } from '../../utility';
 
@@ -161,7 +162,7 @@ const NameList = () => {
   const [value, setValue] = useState(defaultData);
   const textareaRef = useRef(null);
 
-  const { lotteryList, isAnimating, winnerList, allWinnerList, pickOutCount, isRemovedDuplicated } =
+  const { lotteryList, isAnimating, winnerList, allWinnerList, pickOutCount, isRemovedDuplicated, currentPrize  } =
     useSelector((state) => state.main);
   const dispatch = useDispatch();
 
@@ -241,6 +242,13 @@ const NameList = () => {
 
   return (
     <Wrapper style={isActive ? { left: '0px' } : {}}>
+      <Label htmlFor="current_prize_textfield">設定當前獎項</Label>
+      <Input
+        id="current_prize_textfield"
+        type="text"
+        value={currentPrize}
+        onChange={(e) => dispatch(setCurrentPrize(e.target.value))}
+      />
       <Label htmlFor="name_list_textfield">輸入抽獎名單</Label>
       <Textarea
         id="name_list_textfield"
