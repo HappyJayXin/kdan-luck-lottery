@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { setActive, setOpened } from '../../slice/mainSlice';
+import { smoothScrollTo } from '../../utility'
 
 const Mask = styled.div`
   position: absolute;
@@ -14,7 +15,7 @@ const Mask = styled.div`
   align-items: center;
   opacity: 0;
   display: none;
-  transition: opacity 5s 5s linear;
+  transition: opacity 0.5s linear;
 `;
 
 const WinnerContainer = styled.div`
@@ -108,10 +109,11 @@ const Winner = () => {
         setVisibleWinners(currentIndex);
 
         if (winnerListRef.current) {
-          winnerListRef.current.scrollTo({
-            top: winnerListRef.current.scrollHeight,
-            behavior: 'smooth',
-          });
+          smoothScrollTo(
+            winnerListRef.current,
+            winnerListRef.current.scrollHeight,
+            500
+          );
         }
 
         if (currentIndex >= winnerList.length) {
@@ -144,7 +146,7 @@ const Winner = () => {
 
   return (
     <>
-      <Mask style={isOpened ? { display: 'flex', opacity: 100 } : {}}>
+      <Mask style={isOpened ? { display: 'flex', opacity: 1 } : {}}>
         <Wrapper>
           {isAnimationComplete  && (
             <CloseBtn onClick={handleClick}>

@@ -62,3 +62,32 @@ export const reduceArray = (array1, array2) => {
 
   return newArray;
 };
+
+export const smoothScrollTo = (element, target, duration = 500) => {
+  if (typeof window.requestAnimationFrame !== 'function') {
+    fallbackScrollTo(element, target);
+    element.scrollTop = target;
+    return;
+  }
+
+  const start = element.scrollTop;
+  const change = target - start;
+  const startTime = performance.now();
+
+  const easeInOutQuad = (t) =>
+    t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+
+  const animateScroll = (currentTime) => {
+    const elapsed = currentTime - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    const ease = easeInOutQuad(progress);
+
+    element.scrollTop = start + change * ease;
+
+    if (progress < 1) {
+      window.requestAnimationFrame(animateScroll);
+    }
+  };
+
+  window.requestAnimationFrame(animateScroll);
+};
