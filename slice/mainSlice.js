@@ -10,7 +10,7 @@ export const mainSlice = createSlice({
     lotteryList: [],
     allWinnerList: [],
     pickOutCount: 1,
-    isRemovedDuplicated: true,
+    isRemovedDuplicated: false,
   },
   reducers: {
     setActive: (state, action) => {

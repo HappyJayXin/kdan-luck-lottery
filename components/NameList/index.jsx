@@ -183,7 +183,7 @@ const NameList = () => {
     if (textareaRef.current.value.trim() !== '') {
       const list = textareaRef.current.value.trim().split(',');
       const randomList = shuffle(lotteryList.concat(list));
-      setValue('');
+      // setValue('');
       dispatch(setLotteryList(randomList));
     }
   };
