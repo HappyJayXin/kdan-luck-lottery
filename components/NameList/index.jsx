@@ -162,8 +162,15 @@ const NameList = () => {
   const [value, setValue] = useState(defaultData);
   const textareaRef = useRef(null);
 
-  const { lotteryList, isAnimating, winnerList, allWinnerList, pickOutCount, isRemovedDuplicated, currentPrize  } =
-    useSelector((state) => state.main);
+  const {
+    lotteryList,
+    isAnimating,
+    winnerList,
+    allWinnerList,
+    pickOutCount,
+    isRemovedDuplicated,
+    currentPrize,
+  } = useSelector((state) => state.main);
   const dispatch = useDispatch();
 
   const handleClick = () => {
@@ -292,42 +299,53 @@ const NameList = () => {
         <i className="fas fa-address-book fa-2x"></i>
       </ListBtn>
       <List>
+        {/* 當前得獎名單 */}
         <Head>
           <h4>當前得獎名單</h4>
-          <ButtonGroup>
-            <DeleteIconButton onClick={handleRemoveWinnerList}>
-              <i className="fas fa-trash-alt"></i>
-            </DeleteIconButton>
-            <CopyButton onCopy={handleCopyWinnerList} />
-          </ButtonGroup>
+          {winnerList.length > 0 && (
+            <ButtonGroup>
+              <DeleteIconButton onClick={handleRemoveWinnerList}>
+                <i className="fas fa-trash-alt"></i>
+              </DeleteIconButton>
+              <CopyButton onCopy={handleCopyWinnerList} />
+            </ButtonGroup>
+          )}
         </Head>
         <ol>
           {winnerList.map((ele, index) => (
             <li key={`cur_winner_${index}`}>{ele}</li>
           ))}
         </ol>
+
+        {/* 全部得獎名單 */}
         <Head>
           <h4>全部得獎名單</h4>
-          <ButtonGroup>
-            <DeleteIconButton onClick={handleRemoveAllWinnerList}>
-              <i className="fas fa-trash-alt"></i>
-            </DeleteIconButton>
-            <CopyButton onCopy={handleCopyAllWinnerList} />
-          </ButtonGroup>
+          {allWinnerList.length > 0 && (
+            <ButtonGroup>
+              <DeleteIconButton onClick={handleRemoveAllWinnerList}>
+                <i className="fas fa-trash-alt"></i>
+              </DeleteIconButton>
+              <CopyButton onCopy={handleCopyAllWinnerList} />
+            </ButtonGroup>
+          )}
         </Head>
         <ol>
           {allWinnerList.map((ele, index) => (
             <li key={`all_winner_${index}`}>{ele}</li>
           ))}
         </ol>
+
+        {/* 抽獎名單 */}
         <Head>
           <h4>抽獎名單</h4>
-          <ButtonGroup>
-            <DeleteIconButton onClick={handleRemoveLotteryList}>
-              <i className="fas fa-trash-alt"></i>
-            </DeleteIconButton>
-            <CopyButton onCopy={handleCopyLotteryList} />
-          </ButtonGroup>
+          {lotteryList.length > 0 && (
+            <ButtonGroup>
+              <DeleteIconButton onClick={handleRemoveLotteryList}>
+                <i className="fas fa-trash-alt"></i>
+              </DeleteIconButton>
+              <CopyButton onCopy={handleCopyLotteryList} />
+            </ButtonGroup>
+          )}
         </Head>
         <ol>
           {lotteryList.map((ele, index) => (
