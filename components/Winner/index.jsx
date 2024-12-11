@@ -55,7 +55,7 @@ const WinnerContainer = styled.div`
       props.isAnimating ? 'opacity 0.6s ease-in, transform 0.6s ease-in' : 'none'};
   }
 
-  .show {
+  li.show {
     opacity: 1;
     transform: translateY(0);
   }
@@ -119,7 +119,7 @@ const Winner = () => {
         if (winnerListRef.current) {
           smoothScrollTo(
             winnerListRef.current,
-            winnerListRef.current.scrollHeight,
+            winnerListRef.current.scrollHeight - 50,
             500
           );
         }
@@ -138,12 +138,15 @@ const Winner = () => {
 
   useEffect(() => {
     if (isAnimating && visibleWinners > 0 && winnerRefs.current[visibleWinners - 1]) {
-      winnerRefs.current[visibleWinners - 1].current.scrollIntoView({
-        behavior: 'smooth',
-        block: 'nearest',
-      });
+      const targetElement = winnerRefs.current[visibleWinners - 1].current;
+      const container = winnerListRef.current;
+
+      if (targetElement && container) {
+        const offset = targetElement.offsetTop - container.offsetTop;
+        smoothScrollTo(container, offset, 500); // 使用自定義滾動
+      }
     }
-  }, [visibleWinners]);
+  }, [isAnimating, visibleWinners]);
 
   const handleClick = () => {
     setVisibleWinners(0);
