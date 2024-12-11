@@ -106,7 +106,7 @@ const ButtonBG = styled.div`
 
 export default function Home() {
   const dispatch = useDispatch();
-  const { isActive, lotteryList, allWinnerList, pickOutCount, isRemovedDuplicated } = useSelector(
+  const { isActive, lotteryList, allWinnerList, pickOutCount, isRemovedDuplicated, currentPrize } = useSelector(
     (state) => state.main
   );
 
@@ -135,10 +135,14 @@ export default function Home() {
           }
         }
 
-        // console.log({ lotteryList, pickOutCount, winners, restList, allWinnerList, isRemovedDuplicated })
         dispatch(setLotteryList(restList));
         dispatch(setWinnerList(winners));
-        dispatch(setAllWinnerList([...allWinnerList].concat(winners)));
+        dispatch(
+          setAllWinnerList([
+            ...allWinnerList,
+            { prize: currentPrize, winners, timestamp: new Date().toISOString() },
+          ])
+        );
       }
 
       setTimeout(() => {

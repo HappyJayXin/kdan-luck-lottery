@@ -35,6 +35,13 @@ const WinnerContainer = styled.div`
   padding: 24px;
   box-sizing: border-box;
 
+  h2 {
+    font-size: 36px;
+    font-weight: bold;
+    color: #5a1730;
+    margin: 0 0 16px;
+  }
+
   ol {
     margin: 20px 0;
   }
@@ -77,6 +84,7 @@ const Winner = () => {
   const isOpened = useSelector((state) => state.main.isOpened);
   const isAnimating = useSelector((state) => state.main.isAnimating);
   const winnerList = useSelector((state) => state.main.winnerList);
+  const currentPrize = useSelector((state) => state.main.currentPrize);
   const dispatch = useDispatch();
 
   const [visibleWinners, setVisibleWinners] = useState(0);
@@ -154,6 +162,7 @@ const Winner = () => {
             </CloseBtn>
           )}
           <WinnerContainer ref={winnerListRef} isAnimating={isAnimating}>
+            <h2>{currentPrize}</h2>
             <ol>
               {winnerList.map((ele, index) => (
                 <li

@@ -73,6 +73,9 @@ const List = styled.div`
   overflow: scroll;
   margin: 8px 0 0;
 
+  ol {
+    padding: 0;
+  }
   li {
     color: #5a1730;
     font-family: 'Noto Sans TC', sans-serif;
@@ -238,7 +241,12 @@ const NameList = () => {
   };
 
   const handleCopyAllWinnerList = () => {
-    const text = allWinnerList.join(',');
+    const text = allWinnerList
+      .map((ele) => {
+        const time = new Date(ele.timestamp).toLocaleString();
+        return `${ele.prize}, ${time}, ${ele.winners.join(', ')}`;
+      })
+      .join('\n');
     copyTextToClipboard(text);
   };
 
@@ -331,7 +339,9 @@ const NameList = () => {
         </Head>
         <ol>
           {allWinnerList.map((ele, index) => (
-            <li key={`all_winner_${index}`}>{ele}</li>
+            <li key={`all_winner_${index}`}>
+              <strong>{ele.prize}</strong> - {ele.winners.join(', ')}
+            </li>
           ))}
         </ol>
 
