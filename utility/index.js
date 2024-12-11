@@ -50,13 +50,42 @@ export const copyTextToClipboard = (text) => {
 };
 
 export const reduceArray = (array1, array2) => {
+  let newArray = [...array1];
+
   // Remove duplicates from array2
   array2.forEach(function (value) {
-    var index = array1.indexOf(value);
+    var index = newArray.indexOf(value);
     if (index !== -1) {
-      array1.splice(index, 1);
+      newArray.splice(index, 1);
     }
   });
 
-  return array1;
+  return newArray;
+};
+
+export const smoothScrollTo = (element, target, duration = 500) => {
+  if (typeof window.requestAnimationFrame !== 'function') {
+    element.scrollTop = target;
+    return;
+  }
+
+  const start = element.scrollTop;
+  const change = target - start;
+  const startTime = performance.now();
+
+  const easeInOutQuad = (t) => (t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t);
+
+  const animateScroll = (currentTime) => {
+    const elapsed = currentTime - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    const ease = easeInOutQuad(progress);
+
+    element.scrollTop = start + change * ease;
+
+    if (progress < 1) {
+      window.requestAnimationFrame(animateScroll);
+    }
+  };
+
+  window.requestAnimationFrame(animateScroll);
 };

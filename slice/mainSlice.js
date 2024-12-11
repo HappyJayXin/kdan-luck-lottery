@@ -5,11 +5,13 @@ export const mainSlice = createSlice({
   initialState: {
     isActive: false,
     isOpened: false,
+    isAnimating: true,
     winnerList: [],
     lotteryList: [],
     allWinnerList: [],
     pickOutCount: 1,
     isRemovedDuplicated: false,
+    currentPrize: '我就是幸運兒',
   },
   reducers: {
     setActive: (state, action) => {
@@ -20,6 +22,9 @@ export const mainSlice = createSlice({
     },
     setLotteryList: (state, action) => {
       state.lotteryList = action.payload;
+    },
+    setAnimating(state, action) {
+      state.isAnimating = action.payload;
     },
     setWinnerList: (state, action) => {
       state.winnerList = action.payload;
@@ -33,6 +38,9 @@ export const mainSlice = createSlice({
     setPickOutCount: (state, action) => {
       state.pickOutCount = action.payload;
     },
+    setCurrentPrize: (state, action) => {
+      state.currentPrize = action.payload;
+    },
   },
 });
 
@@ -45,6 +53,8 @@ export const {
   setAllWinnerList,
   setPickOutCount,
   setIsRemoveDuplicated,
+  setAnimating,
+  setCurrentPrize,
 } = mainSlice.actions;
 
 export default mainSlice.reducer;
