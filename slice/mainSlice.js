@@ -41,6 +41,17 @@ export const mainSlice = createSlice({
     setCurrentPrize: (state, action) => {
       state.currentPrize = action.payload;
     },
+    undoLottery(state) {
+      const lastRemovedResult = state.allWinnerList.pop();
+      state.lotteryList = [...state.lotteryList, ...lastRemovedResult.winners];
+
+      if (state.allWinnerList.length > 0) {
+        const previousResult = state.allWinnerList[state.allWinnerList.length - 1];
+        state.winnerList = previousResult.winners;
+      } else {
+        state.winnerList = [];
+      }
+    },
   },
 });
 
@@ -55,6 +66,7 @@ export const {
   setIsRemoveDuplicated,
   setAnimating,
   setCurrentPrize,
+	undoLottery,
 } = mainSlice.actions;
 
 export default mainSlice.reducer;

@@ -1,6 +1,7 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
+import useUndoKey from './useUndoKey';
 import { defaultData } from './data';
 
 import {
@@ -11,6 +12,7 @@ import {
   setIsRemoveDuplicated,
   setAnimating,
   setCurrentPrize,
+  undoLottery,
 } from '../../slice/mainSlice';
 import { shuffle, copyTextToClipboard } from '../../utility';
 
@@ -54,7 +56,7 @@ const Textarea = styled.textarea`
   border-radius: 10px;
   outline: none;
   padding: 5px 10px;
-  height: 180px;
+  height: 100px;
   width: 270px;
   font-size: 14px;
 `;
@@ -176,6 +178,19 @@ const NameList = () => {
   } = useSelector((state) => state.main);
   const dispatch = useDispatch();
 
+  const handleUndo = () => {
+    if (isActive && allWinnerList.length > 0) {
+      const result = confirm('確定要復原這次抽獎結果嗎？');
+      if (result) {
+        dispatch(undoLottery());
+      }
+    } else {
+      alert('目前沒有可復原的抽獎結果');
+    }
+  };
+
+  useUndoKey(handleUndo);
+
   const handleClick = () => {
     setActive((currentState) => !currentState);
   };
@@ -257,14 +272,14 @@ const NameList = () => {
 
   return (
     <Wrapper style={isActive ? { left: '0px' } : {}}>
-      <Label htmlFor="current_prize_textfield">設定當前獎項</Label>
+      <Label htmlFor="current_prize_textfield">當前獎項</Label>
       <Input
         id="current_prize_textfield"
         type="text"
         value={currentPrize}
         onChange={(e) => dispatch(setCurrentPrize(e.target.value))}
       />
-      <Label htmlFor="name_list_textfield">輸入抽獎名單</Label>
+      <Label htmlFor="name_list_textfield">抽獎名單</Label>
       <Textarea
         id="name_list_textfield"
         ref={textareaRef}

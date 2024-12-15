@@ -7,6 +7,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import Rocket from '../components/Rocket';
 import Winner from '../components/Winner';
 import NameList from '../components/NameList';
+import HelpButton from '../components/HelpButton';
 // import Meteors from '../components/Meteors';
 // import Planet from '../components/Planet';
 import { reduceArray } from '../utility';
@@ -106,11 +107,10 @@ const ButtonBG = styled.div`
 
 export default function Home() {
   const dispatch = useDispatch();
-  const { isActive, lotteryList, allWinnerList, pickOutCount, isRemovedDuplicated, currentPrize } = useSelector(
-    (state) => state.main
-  );
+  const { isActive, lotteryList, allWinnerList, pickOutCount, isRemovedDuplicated, currentPrize } =
+    useSelector((state) => state.main);
 
-  const handleClick = () => {
+  const handleStartClick = () => {
     if (!isActive) {
       if (lotteryList.length === 0) {
         alert('抽獎名單為空，無法抽獎，請先填入抽獎者！');
@@ -152,6 +152,16 @@ export default function Home() {
     }
   };
 
+  const handleHelpClick = () => {
+    const isMac = navigator.userAgent.toLowerCase().includes('mac');
+    const undoShortcut = isMac ? 'Cmd+Z' : 'Ctrl+Z';
+
+    alert(`
+      快捷鍵：
+      - ${undoShortcut}：復原上一輪抽獎結果
+    `);
+  };
+
   return (
     <>
       <Head>
@@ -160,7 +170,7 @@ export default function Home() {
       <Container>
         <Script src="https://kit.fontawesome.com/94b5ea6607.js"></Script>
         <Wrapper>
-          <GoButton onClick={handleClick} isDisabled={lotteryList.length === 0}>
+          <GoButton onClick={handleStartClick} isDisabled={lotteryList.length === 0}>
             START
           </GoButton>
           <ButtonBG />
@@ -170,6 +180,7 @@ export default function Home() {
         <Rocket />
         <Winner />
         <NameList />
+        <HelpButton onClick={handleHelpClick} />
       </Container>
     </>
   );
