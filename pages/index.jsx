@@ -28,15 +28,22 @@ const Container = styled.div`
   overflow: hidden;
   height: 100vh;
   width: 100vw;
-  background-image: url('/background.png');
+  background-image: url('/kdan_dream_team.png');
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
 `;
-const color = '#ff0000';
-const color_dark = `#7b0000`;
-const color_border = `#ff3030`;
-const color_text = `#fff`;
+
+const Wrapper = styled.div`
+  position: absolute;
+  bottom: -108px;
+  z-index: 25;
+`;
+
+const color = '#FF4500';
+const color_dark = '#B33000';
+const color_border = '#FF6347';
+const color_text = '#fff';
 
 const GoButton = styled.button`
   background: ${({ isDisabled }) => (isDisabled ? '#bbb' : color)};
@@ -47,15 +54,15 @@ const GoButton = styled.button`
   cursor: pointer;
   font-weight: bold;
   outline: none;
-  padding: 1.25em 3em;
+  padding: 1em 2.75em;
   text-transform: uppercase;
   transform-style: preserve-3d;
   transition: all 150ms cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  font-size: 18px;
+  font-size: 20px;
 
   z-index: 40;
   top: 24px;
-  left: calc(50% - 86px);
+  left: calc(50% - 90px);
   position: absolute;
 
   &::before {
@@ -90,18 +97,23 @@ const GoButton = styled.button`
   }
 `;
 
-const Wrapper = styled.div`
-  position: absolute;
-  bottom: -108px;
-  z-index: 25;
-`;
+const button_color_border = '#FF6347';
+const button_bg = 'linear-gradient(135deg, #4B0000, #200000)';
+const button_disabled_bg = 'linear-gradient(135deg, #666666, #333333)';
+const button_disabled_border = '#999';
+const button_disabled_shadow = 'rgba(100, 100, 100, 0.5)';
+const button_shadow_enabled = `0 10px 20px rgba(255, 69, 0, 0.5), 0 0 30px rgba(255, 69, 0, 0.8)`;
 
 const ButtonBG = styled.div`
   width: 240px;
   height: 240px;
   display: block;
-  background-color: #050f48;
   border-radius: 20px;
+  background: ${({ isDisabled }) => (isDisabled ? button_disabled_bg : button_bg)};
+  border: 5px solid
+    ${({ isDisabled }) => (isDisabled ? button_disabled_border : button_color_border)};
+  box-shadow: ${({ isDisabled }) =>
+    isDisabled ? `0 5px 10px ${button_disabled_shadow}` : button_shadow_enabled};
   left: calc(50% - 160px);
 `;
 
@@ -173,7 +185,7 @@ export default function Home() {
           <GoButton onClick={handleStartClick} isDisabled={lotteryList.length === 0}>
             START
           </GoButton>
-          <ButtonBG />
+          <ButtonBG isDisabled={lotteryList.length === 0} />
         </Wrapper>
         {/* <Meteors /> */}
         {/* <Planet /> */}

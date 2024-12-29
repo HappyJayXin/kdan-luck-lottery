@@ -38,7 +38,7 @@ const WinnerContainer = styled.div`
   h2 {
     font-size: 36px;
     font-weight: bold;
-    color: #5a1730;
+    color: #b33000;
     margin: 0 0 16px;
   }
 
