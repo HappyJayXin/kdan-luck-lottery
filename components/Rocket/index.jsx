@@ -2,7 +2,6 @@ import React, { useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
 import { gsap } from "gsap";
-import Image from 'next/image';
 
 const Container = styled.div`
   display: flex;
@@ -21,6 +20,9 @@ const RocketBody = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+
+  filter: drop-shadow(0px 0px 10px #ff4500) brightness(1.2) contrast(1.5);
+  opacity: 0;
 `;
 
 const RocketSmoke = styled.div`
@@ -36,7 +38,8 @@ const RocketSmoke = styled.div`
       margin: 30px 0 0 0;
       width: 100%;
       height: 100%;
-      background: #f1f2f6;
+      background: #ff6347;
+      box-shadow: 0 0 10px 2px #ff4500;
 
       div {
         position: absolute;
@@ -45,8 +48,8 @@ const RocketSmoke = styled.div`
         height: 44px;
         left: -5px;
         bottom: 0;
-        box-shadow: inset -2px -3px 0 0 #f1f2f6;
-        background: #fff;
+        background: #ff6347;
+        box-shadow: inset -2px -3px 0 0 #b33000;
         z-index: 10;
       }
 
@@ -99,6 +102,11 @@ const Rocket = () => {
 
     if (isActive) {
       tl.addLabel("engine-start")
+      .to(rocket.current, {
+        duration: 0.3,
+        opacity: 1,
+        ease: 'power2.out',
+      })
       .from(rocket.current, {
         duration: esDuration,
         x: "+=5px",
