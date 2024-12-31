@@ -124,7 +124,9 @@ export default function Home() {
         const winners = [];
 
         if (isRemovedDuplicated) {
-          restList = [...reduceArray(restList, allWinnerList)];
+          // extract winners from allWinnerList
+          const allWinnerNames = allWinnerList.flatMap(item => item.winners);
+          restList = [...reduceArray(restList, allWinnerNames)];
         }
 
         for (let index = 0; index < pickOutCount; index++) {
