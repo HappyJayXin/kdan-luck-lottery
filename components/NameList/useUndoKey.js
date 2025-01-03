@@ -3,6 +3,10 @@ import { useEffect } from 'react';
 const useUndoKey = (onUndo) => {
   useEffect(() => {
     const handleKeyDown = (e) => {
+      if (['INPUT', 'TEXTAREA'].includes(e.target.tagName)) {
+        return;
+      }
+
       const isUndoKeyPressed = (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z';
 
       if (isUndoKeyPressed) {
