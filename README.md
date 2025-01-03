@@ -20,7 +20,7 @@ yarn dev
 ## 部署
 
 目前是部署在 Jay 自己的 Vercel 平台上：
-[https://kdan-luck-lottery-git-feature-202-0032dd-jays-projects-31ce62b9.vercel.app/](https://kdan-luck-lottery-git-feature-202-0032dd-jays-projects-31ce62b9.vercel.app/)
+[https://kdan-luck-lottery.vercel.app/](https://kdan-luck-lottery.vercel.app/)
 
 ---
 
