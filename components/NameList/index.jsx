@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import useUndoKey from './useUndoKey';
@@ -8,7 +8,6 @@ import {
   setLotteryList,
   setPickOutCount,
   setWinnerList,
-  setAllWinnerList,
   setIsRemoveDuplicated,
   setAnimating,
   setCurrentPrize,
@@ -209,7 +208,6 @@ const NameList = () => {
     if (textareaRef.current.value.trim() !== '') {
       const list = textareaRef.current.value.trim().split(',');
       const randomList = shuffle(lotteryList.concat(list));
-      // setValue('');
       dispatch(setLotteryList(randomList));
     }
   };
@@ -231,14 +229,6 @@ const NameList = () => {
 
     if (result) {
       dispatch(setWinnerList([]));
-    }
-  };
-
-  const handleRemoveAllWinnerList = () => {
-    const result = confirm('確定要清除嗎？');
-
-    if (result) {
-      dispatch(setAllWinnerList([]));
     }
   };
 
@@ -345,9 +335,6 @@ const NameList = () => {
           <h4>全部得獎名單</h4>
           {allWinnerList.length > 0 && (
             <ButtonGroup>
-              <DeleteIconButton onClick={handleRemoveAllWinnerList}>
-                <i className="fas fa-trash-alt"></i>
-              </DeleteIconButton>
               <CopyButton onCopy={handleCopyAllWinnerList} />
             </ButtonGroup>
           )}
