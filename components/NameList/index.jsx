@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import useUndoKey from './useUndoKey';
@@ -163,7 +163,7 @@ const CopyButton = ({ onCopy }) => {
 };
 
 const NameList = () => {
-  const [isActive, setActive] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true);
   const [value, setValue] = useState(defaultData);
   const textareaRef = useRef(null);
 
@@ -179,20 +179,22 @@ const NameList = () => {
   const dispatch = useDispatch();
 
   const handleUndo = () => {
-    if (isActive && allWinnerList.length > 0) {
-      const result = confirm('確定要復原這次抽獎結果嗎？');
-      if (result) {
-        dispatch(undoLottery());
+    if (isSidebarCollapsed) {
+      if (allWinnerList.length > 0) {
+        const result = confirm('確定要復原這次抽獎結果嗎？');
+        if (result) {
+          dispatch(undoLottery());
+        }
+      } else {
+        alert('目前沒有可復原的抽獎結果');
       }
-    } else {
-      alert('目前沒有可復原的抽獎結果');
     }
   };
 
   useUndoKey(handleUndo);
 
   const handleClick = () => {
-    setActive((currentState) => !currentState);
+    setIsSidebarCollapsed((currentState) => !currentState);
   };
 
   const handleNameListChange = (e) => {
@@ -271,7 +273,7 @@ const NameList = () => {
   };
 
   return (
-    <Wrapper style={isActive ? { left: '0px' } : {}}>
+    <Wrapper style={isSidebarCollapsed ? { left: '0px' } : {}}>
       <Label htmlFor="current_prize_textfield">當前獎項</Label>
       <Input
         id="current_prize_textfield"
