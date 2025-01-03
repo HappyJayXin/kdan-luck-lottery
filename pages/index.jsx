@@ -179,7 +179,7 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Kdan 抽獎</title>
+        <title>KDAN 2025 尾牙抽獎</title>
       </Head>
       <Container>
         <Script src="https://kit.fontawesome.com/94b5ea6607.js"></Script>
