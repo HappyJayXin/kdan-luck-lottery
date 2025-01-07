@@ -28,7 +28,7 @@ const Container = styled.div`
   overflow: hidden;
   height: 100vh;
   width: 100vw;
-  background-image: url('/background.png');
+  background-image: url('/2025_ecruitment_teaser.png');
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
@@ -167,7 +167,7 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Kdan 抽獎</title>
+        <title>KDAN 抽獎</title>
       </Head>
       <Container>
         <Script src="https://kit.fontawesome.com/94b5ea6607.js"></Script>
