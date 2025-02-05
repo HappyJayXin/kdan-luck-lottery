@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
+import { Provider } from 'react-redux';
 import { createGlobalStyle, ThemeProvider } from 'styled-components';
 import store from '../store';
-import { Provider } from 'react-redux';
+import { DialogProvider } from '../components/Dialog/context';
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -36,7 +37,9 @@ export default function App({ Component, pageProps }) {
       <GlobalStyle />
       <ThemeProvider theme={theme}>
         <Provider store={store}>
-          <Component {...pageProps} />
+          <DialogProvider>
+            <Component {...pageProps} />
+          </DialogProvider>
         </Provider>
       </ThemeProvider>
     </>

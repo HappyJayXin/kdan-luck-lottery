@@ -4,10 +4,12 @@ import Script from 'next/script';
 import styled from 'styled-components';
 import { useSelector, useDispatch } from 'react-redux';
 
+import { useDialog } from '../components/Dialog/context';
 import Rocket from '../components/Rocket';
 import Winner from '../components/Winner';
 import NameList from '../components/NameList';
 import HelpButton from '../components/HelpButton';
+import Dialog from '../components/Dialog';
 // import Meteors from '../components/Meteors';
 // import Planet from '../components/Planet';
 import { reduceArray } from '../utility';
@@ -109,11 +111,12 @@ export default function Home() {
   const dispatch = useDispatch();
   const { isActive, lotteryList, allWinnerList, pickOutCount, isRemovedDuplicated, currentPrize } =
     useSelector((state) => state.main);
+  const { openDialog } = useDialog();
 
   const handleStartClick = () => {
     if (!isActive) {
       if (lotteryList.length === 0) {
-        alert('抽獎名單為空，無法抽獎，請先填入抽獎者！');
+        openDialog('抽獎名單為空，無法抽獎，請先填入抽獎者！');
         return;
       }
 
@@ -171,6 +174,7 @@ export default function Home() {
       </Head>
       <Container>
         <Script src="https://kit.fontawesome.com/94b5ea6607.js"></Script>
+        <Dialog />
         <Wrapper>
           <GoButton onClick={handleStartClick} isDisabled={lotteryList.length === 0}>
             START
