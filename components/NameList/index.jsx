@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import useUndoKey from './useUndoKey';
 import { defaultData } from './data';
+import { useDialog } from '../Dialog/context';
 
 import {
   setLotteryList,
@@ -178,6 +179,8 @@ const NameList = () => {
   } = useSelector((state) => state.main);
   const dispatch = useDispatch();
 
+  const { openDialog } = useDialog();
+
   const handleUndo = () => {
     if (isSidebarCollapsed) {
       if (allWinnerList.length > 0) {
@@ -186,7 +189,7 @@ const NameList = () => {
           dispatch(undoLottery());
         }
       } else {
-        alert('目前沒有可復原的抽獎結果');
+        openDialog('目前沒有可復原的抽獎結果');
       }
     }
   };

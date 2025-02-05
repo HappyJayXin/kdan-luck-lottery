@@ -128,7 +128,7 @@ export default function Home() {
 
         if (isRemovedDuplicated) {
           // extract winners from allWinnerList
-          const allWinnerNames = allWinnerList.flatMap(item => item.winners);
+          const allWinnerNames = allWinnerList.flatMap((item) => item.winners);
           restList = [...reduceArray(restList, allWinnerNames)];
         }
 
@@ -161,7 +161,7 @@ export default function Home() {
     const isMac = navigator.userAgent.toLowerCase().includes('mac');
     const undoShortcut = isMac ? 'Cmd+Z' : 'Ctrl+Z';
 
-    alert(`
+    openDialog(`
       快捷鍵：
       - ${undoShortcut}：復原上一輪抽獎結果
     `);
