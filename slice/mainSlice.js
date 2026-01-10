@@ -11,7 +11,7 @@ export const mainSlice = createSlice({
     allWinnerList: [],
     pickOutCount: 1,
     isRemovedDuplicated: false,
-    currentPrize: '8+獎',
+    currentPrize: '安慰獎',
   },
   reducers: {
     setActive: (state, action) => {

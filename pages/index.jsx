@@ -28,7 +28,7 @@ const Container = styled.div`
   overflow: hidden;
   height: 100vh;
   width: 100vw;
-  background-image: url('/kdan_dream_team.png');
+  background-image: url('/kdan_hero.png');
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
