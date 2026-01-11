@@ -5,37 +5,47 @@ import useUndoKey from './useUndoKey';
 import { defaultData } from './data';
 
 import {
-  setLotteryList,
-  setPickOutCount,
-  setWinnerList,
-  setIsRemoveDuplicated,
+  addPrize,
+  movePrizeDown,
+  movePrizeUp,
+  removePrize,
   setAnimating,
-  setCurrentPrize,
+  setIsRemoveDuplicated,
+  setLotteryList,
+  setWinnerList,
   undoLottery,
+  updatePrizeName,
+  updatePrizePickOutCount,
 } from '../../slice/mainSlice';
 import { shuffle, copyTextToClipboard } from '../../utility';
 
 const Wrapper = styled.div`
   position: absolute;
+  top: 0;
   left: -362px;
   padding: 30px 30px 0 30px;
   background-color: #f8e7e4;
-  height: 95vh;
+  height: 100vh;
+  height: 100dvh;
   width: 300px;
   z-index: 20;
   border: #5a1730 2px solid;
   transition: left 0.1s 0s linear;
+  box-sizing: border-box;
+
+  display: flex;
+  flex-direction: column;
 `;
 
 const ListBtn = styled.div`
-  position: absolute;
+  position: fixed;
   background-color: #f8e7e4;
   color: #5a1730;
   border-radius: 0 20% 20% 0;
   border: #5a1730 2px solid;
   border-left: none;
   top: 120px;
-  right: -42px;
+  left: ${({ isOpen }) => (isOpen ? '300px' : '0px')};
   width: 40px;
   height: 50px;
   display: flex;
@@ -43,6 +53,8 @@ const ListBtn = styled.div`
   align-items: center;
   cursor: pointer;
   font-size: 12px;
+  z-index: 50;
+  transition: left 0.1s 0s linear;
 `;
 
 const Label = styled.label`
@@ -55,9 +67,14 @@ const Textarea = styled.textarea`
   border-radius: 10px;
   outline: none;
   padding: 5px 10px;
+  min-height: 100px;
   height: 100px;
-  width: 270px;
+  width: 100%;
+  max-width: 100%;
   font-size: 14px;
+  box-sizing: border-box;
+  resize: both;
+  overflow: auto;
 `;
 
 const Input = styled.input`
@@ -67,12 +84,14 @@ const Input = styled.input`
   padding: 5px 10px;
   width: 270px;
   font-size: 14px;
+  box-sizing: border-box;
 `;
 
 const List = styled.div`
-  height: calc(100vh - 390px);
-  overflow: scroll;
+  flex: 1;
+  overflow: auto;
   margin: 8px 0 0;
+  min-height: 0;
 
   ol {
     padding: 0;
@@ -124,7 +143,9 @@ const CopyIconButton = styled(BaseIconButton)`
 const SubmitWrapper = styled.div`
   display: flex;
   justify-content: flex-end;
+  margin-top: 2px;
 `;
+
 
 const SubmitButton = styled.button`
   font-size: 0.875rem;
@@ -136,6 +157,96 @@ const SubmitButton = styled.button`
   border: 0;
   margin-left: 12px;
   cursor: pointer;
+`;
+
+const PrizeSection = styled.div`
+  margin-bottom: 8px;
+`;
+
+const PrizeList = styled.div`
+  border: #5a1730 2px solid;
+  border-radius: 10px;
+  padding: 8px;
+  background: #fff;
+  max-height: 200px;
+  overflow: auto;
+`;
+
+const PrizeRow = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 0;
+
+  & + & {
+    border-top: 1px solid rgba(90, 23, 48, 0.2);
+  }
+`;
+
+const PrizeRowTop = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+`;
+
+const PrizeRowBottom = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+`;
+
+const PrizeNameInput = styled(Input)`
+  width: 100%;
+`;
+
+const PrizeCountInput = styled(Input)`
+  width: 84px;
+  padding: 5px 8px;
+`;
+
+const PrizeActions = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+`;
+
+const SmallIconButton = styled.button`
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  border: #5a1730 1px solid;
+  background: #f8e7e4;
+  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
+  opacity: ${({ disabled }) => (disabled ? 0.5 : 1)};
+`;
+
+const AddPrizeButton = styled.button`
+  width: 100%;
+  margin-top: 8px;
+  border-radius: 10px;
+  border: #5a1730 2px dashed;
+  background: transparent;
+  color: #5a1730;
+  padding: 8px;
+  cursor: pointer;
+  font-weight: bold;
+`;
+
+const PrizeMeta = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 6px 0;
+`;
+
+const PrizeStatus = styled.span`
+  font-size: 12px;
+  color: ${({ variant }) => {
+    if (variant === 'active') return '#198754';
+    if (variant === 'done') return '#6c757d';
+    return '#5a1730';
+  }};
 `;
 
 const CopyButton = ({ onCopy }) => {
@@ -171,9 +282,9 @@ const NameList = () => {
     isAnimating,
     winnerList,
     allWinnerList,
-    pickOutCount,
     isRemovedDuplicated,
-    currentPrize,
+    prizeQueue,
+    activePrizeIndex,
   } = useSelector((state) => state.main);
   const dispatch = useDispatch();
 
@@ -222,9 +333,6 @@ const NameList = () => {
     dispatch(setAnimating(e.target.checked));
   };
 
-  const handlePickOutChange = (e) => {
-    dispatch(setPickOutCount(e.target.value <= 0 ? 1 : e.target.value));
-  };
 
   const handleRemoveWinnerList = () => {
     const result = confirm('確定要清除嗎？');
@@ -251,7 +359,8 @@ const NameList = () => {
     const text = allWinnerList
       .map((ele) => {
         const time = new Date(ele.timestamp).toLocaleString();
-        return `${ele.prize}, ${time}, ${ele.winners.join(', ')}`;
+        const count = ele.pickOutCount ? `（${ele.pickOutCount}人）` : '';
+        return `${ele.prizeName}${count}, ${time}, ${ele.winners.join(', ')}`;
       })
       .join('\n');
     copyTextToClipboard(text);
@@ -264,13 +373,90 @@ const NameList = () => {
 
   return (
     <Wrapper style={isSidebarCollapsed ? { left: '0px' } : {}}>
-      <Label htmlFor="current_prize_textfield">當前獎項</Label>
-      <Input
-        id="current_prize_textfield"
-        type="text"
-        value={currentPrize}
-        onChange={(e) => dispatch(setCurrentPrize(e.target.value))}
-      />
+      <Label>獎項設定</Label>
+      <PrizeSection>
+        <PrizeMeta>
+          <PrizeStatus variant={activePrizeIndex === -1 ? 'done' : 'active'}>
+            {activePrizeIndex === -1
+              ? '所有獎項已完成'
+              : `目前進行：${prizeQueue[activePrizeIndex]?.name || '-'}`}
+          </PrizeStatus>
+        </PrizeMeta>
+        <PrizeList>
+          {prizeQueue.length === 0 ? (
+            <PrizeStatus>尚未新增獎項</PrizeStatus>
+          ) : (
+            prizeQueue.map((prize, index) => {
+              const isActive = index === activePrizeIndex;
+              const isCompleted = prize.isCompleted;
+              const statusVariant = isCompleted ? 'done' : isActive ? 'active' : 'pending';
+              const statusText = isCompleted ? '已抽' : isActive ? '準備中' : '未抽';
+
+              return (
+                <PrizeRow key={prize.id}>
+                  <PrizeRowTop>
+                    <PrizeNameInput
+                      type="text"
+                      value={prize.name}
+                      onChange={(e) =>
+                        dispatch(updatePrizeName({ index, name: e.target.value }))
+                      }
+                    />
+                    <PrizeStatus variant={statusVariant}>{statusText}</PrizeStatus>
+                  </PrizeRowTop>
+
+                  <PrizeRowBottom>
+                    <PrizeCountInput
+                      type="number"
+                      value={prize.pickOutCount}
+                      disabled={isCompleted}
+                      onChange={(e) =>
+                        dispatch(updatePrizePickOutCount({ index, pickOutCount: e.target.value }))
+                      }
+                    />
+
+                    <PrizeActions>
+                      <SmallIconButton
+                        type="button"
+                        disabled={index === 0 || isCompleted}
+                        onClick={() => dispatch(movePrizeUp(index))}
+                        aria-label="move up"
+                      >
+                        ↑
+                      </SmallIconButton>
+                      <SmallIconButton
+                        type="button"
+                        disabled={index === prizeQueue.length - 1 || isCompleted}
+                        onClick={() => dispatch(movePrizeDown(index))}
+                        aria-label="move down"
+                      >
+                        ↓
+                      </SmallIconButton>
+                      <SmallIconButton
+                        type="button"
+                        disabled={isCompleted}
+                        onClick={() => {
+                          const result = confirm('確定要刪除這個獎項嗎？');
+                          if (result) {
+                            dispatch(removePrize(index));
+                          }
+                        }}
+                        aria-label="delete"
+                      >
+                        ✕
+                      </SmallIconButton>
+                    </PrizeActions>
+                  </PrizeRowBottom>
+                </PrizeRow>
+              );
+            })
+          )}
+        </PrizeList>
+        <AddPrizeButton type="button" onClick={() => dispatch(addPrize())}>
+          + 新增獎項
+        </AddPrizeButton>
+      </PrizeSection>
+
       <Label htmlFor="name_list_textfield">抽獎名單</Label>
       <Textarea
         id="name_list_textfield"
@@ -299,18 +485,9 @@ const NameList = () => {
           checked={isAnimating}
           onChange={handleChangeAnimation}
         />
-        <Label htmlFor="enable_animation_checkbox">心跳加速模式（逐列顯示結果）</Label>
+        <Label htmlFor="enable_animation_checkbox">逐列顯示結果</Label>
       </div>
-      <div>
-        <Label htmlFor="pick_out_count_textfield">設定要抽出的幸運兒數量</Label>
-        <Input
-          id="pick_out_count_textfield"
-          type="number"
-          value={pickOutCount}
-          onChange={handlePickOutChange}
-        />
-      </div>
-      <ListBtn onClick={handleClick}>
+      <ListBtn onClick={handleClick} isOpen={isSidebarCollapsed}>
         <i className="fas fa-address-book fa-2x"></i>
       </ListBtn>
       <List>
@@ -344,7 +521,7 @@ const NameList = () => {
         <ol>
           {allWinnerList.map((ele, index) => (
             <li key={`all_winner_${index}`}>
-              <strong>{ele.prize}</strong> - {ele.winners.join(', ')}
+              <strong>{ele.prizeName}</strong> - {ele.winners.join(', ')}
             </li>
           ))}
         </ol>

@@ -18,6 +18,9 @@ import {
   setWinnerList,
   setAllWinnerList,
   setLotteryList,
+  markActivePrizeCompleted,
+  advanceToNextPrize,
+  setCurrentDraw,
 } from '../slice/mainSlice';
 
 const Container = styled.div`
@@ -119,51 +122,89 @@ const ButtonBG = styled.div`
 
 export default function Home() {
   const dispatch = useDispatch();
-  const { isActive, lotteryList, allWinnerList, pickOutCount, isRemovedDuplicated, currentPrize } =
+  const { isActive, lotteryList, allWinnerList, isRemovedDuplicated, prizeQueue, activePrizeIndex } =
     useSelector((state) => state.main);
 
   const handleStartClick = () => {
-    if (!isActive) {
-      if (lotteryList.length === 0) {
-        alert('抽獎名單為空，無法抽獎，請先填入抽獎者！');
+    if (isActive) {
+      return;
+    }
+
+    if (prizeQueue.length === 0) {
+      alert('請先新增獎項，再開始抽獎！');
+      return;
+    }
+
+    if (activePrizeIndex === -1) {
+      alert('所有獎項已抽完！');
+      return;
+    }
+
+    if (lotteryList.length === 0) {
+      alert('抽獎名單為空，無法抽獎，請先填入抽獎者！');
+      return;
+    }
+
+    const activePrize = prizeQueue[activePrizeIndex];
+    if (!activePrize) {
+      alert('找不到當前獎項，請重新整理或重新設定獎項。');
+      return;
+    }
+
+    if (activePrize.isCompleted) {
+      dispatch(advanceToNextPrize());
+      alert('此獎項已完成，已自動切換到下一個獎項。');
+      return;
+    }
+
+    dispatch(setActive(true));
+    let restList = [...lotteryList];
+
+    if (restList.length >= 1) {
+      const winners = [];
+
+      if (isRemovedDuplicated) {
+        // extract winners from allWinnerList
+        const allWinnerNames = allWinnerList.flatMap((item) => item.winners);
+        restList = [...reduceArray(restList, allWinnerNames)];
+      }
+
+      if (restList.length === 0) {
+        alert('目前沒有可抽的人（可能全部人都已中獎），請調整名單或關閉去除重複。');
+        dispatch(setActive(false));
         return;
       }
 
-      dispatch(setActive(true));
-      let restList = [...lotteryList];
-
-      if (restList.length >= 1) {
-        const winners = [];
-
-        if (isRemovedDuplicated) {
-          // extract winners from allWinnerList
-          const allWinnerNames = allWinnerList.flatMap(item => item.winners);
-          restList = [...reduceArray(restList, allWinnerNames)];
+      for (let index = 0; index < activePrize.pickOutCount; index++) {
+        if (restList.length) {
+          const luckyNum = Math.floor(Math.random() * restList.length);
+          winners.push(restList[luckyNum]);
+          restList.splice(luckyNum, 1);
         }
-
-        for (let index = 0; index < pickOutCount; index++) {
-          if (restList.length) {
-            const luckyNum = Math.floor(Math.random() * restList.length);
-            winners.push(restList[luckyNum]);
-            restList.splice(luckyNum, 1);
-          }
-        }
-
-        dispatch(setLotteryList(restList));
-        dispatch(setWinnerList(winners));
-        dispatch(
-          setAllWinnerList([
-            ...allWinnerList,
-            { prize: currentPrize, winners, timestamp: new Date().toISOString() },
-          ])
-        );
       }
 
-      setTimeout(() => {
-        dispatch(setActive(false));
-        dispatch(setOpened(true));
-      }, 2200);
+      dispatch(setLotteryList(restList));
+      dispatch(setWinnerList(winners));
+      dispatch(setCurrentDraw({ prizeId: activePrize.id, prizeName: activePrize.name }));
+      dispatch(markActivePrizeCompleted());
+      dispatch(
+        setAllWinnerList([
+          ...allWinnerList,
+          {
+            prizeId: activePrize.id,
+            prizeName: activePrize.name,
+            pickOutCount: activePrize.pickOutCount,
+            winners,
+            timestamp: new Date().toISOString(),
+          },
+        ])
+      );
     }
+
+    setTimeout(() => {
+      dispatch(setActive(false));
+      dispatch(setOpened(true));
+    }, 2200);
   };
 
   const handleHelpClick = () => {
@@ -184,10 +225,15 @@ export default function Home() {
       <Container>
         <Script src="https://kit.fontawesome.com/94b5ea6607.js"></Script>
         <Wrapper>
-          <GoButton onClick={handleStartClick} isDisabled={lotteryList.length === 0}>
+          <GoButton
+            onClick={handleStartClick}
+            isDisabled={lotteryList.length === 0 || activePrizeIndex === -1 || prizeQueue.length === 0}
+          >
             START
           </GoButton>
-          <ButtonBG isDisabled={lotteryList.length === 0} />
+          <ButtonBG
+            isDisabled={lotteryList.length === 0 || activePrizeIndex === -1 || prizeQueue.length === 0}
+          />
         </Wrapper>
         {/* <Meteors /> */}
         {/* <Planet /> */}

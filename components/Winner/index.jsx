@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
-import { setActive, setOpened } from '../../slice/mainSlice';
-import { smoothScrollTo } from '../../utility'
+import { advanceToNextPrize, clearCurrentDraw, setActive, setOpened } from '../../slice/mainSlice';
+import { smoothScrollTo } from '../../utility';
 
 const Mask = styled.div`
   position: absolute;
@@ -84,7 +84,7 @@ const Winner = () => {
   const isOpened = useSelector((state) => state.main.isOpened);
   const isAnimating = useSelector((state) => state.main.isAnimating);
   const winnerList = useSelector((state) => state.main.winnerList);
-  const currentPrize = useSelector((state) => state.main.currentPrize);
+  const currentDraw = useSelector((state) => state.main.currentDraw);
   const dispatch = useDispatch();
 
   const [visibleWinners, setVisibleWinners] = useState(0);
@@ -152,20 +152,25 @@ const Winner = () => {
     setVisibleWinners(0);
     dispatch(setOpened(false));
     dispatch(setActive(false));
-    winnerListRef.current.scrollTop = 0;
+    dispatch(advanceToNextPrize());
+    dispatch(clearCurrentDraw());
+
+    if (winnerListRef.current) {
+      winnerListRef.current.scrollTop = 0;
+    }
   };
 
   return (
     <>
       <Mask style={isOpened ? { display: 'flex', opacity: 1 } : {}}>
         <Wrapper>
-          {isAnimationComplete  && (
+          {isAnimationComplete && (
             <CloseBtn onClick={handleClick}>
               <i className="fas fa-times fa-2x"></i>
             </CloseBtn>
           )}
           <WinnerContainer ref={winnerListRef} isAnimating={isAnimating}>
-            <h2>{currentPrize}</h2>
+            <h2>{currentDraw?.prizeName || ''}</h2>
             <ol>
               {winnerList.map((ele, index) => (
                 <li
