@@ -62,17 +62,34 @@ const Label = styled.label`
   display: inline-block;
 `;
 
+const TextareaDock = styled.div`
+  position: relative;
+  width: 100%;
+  height: 100px;
+`;
+
 const Textarea = styled.textarea`
   border: #5a1730 3px solid;
   border-radius: 10px;
   outline: none;
   padding: 5px 10px;
-  min-height: 100px;
-  height: 100px;
-  width: 100%;
-  max-width: 100%;
   font-size: 14px;
   box-sizing: border-box;
+
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 30;
+
+  width: 100%;
+  min-width: 100%;
+  height: 100%;
+  min-height: 100px;
+
+  /* Allow dragging beyond sidebar width, without affecting layout */
+  max-width: 100vw;
+  max-height: 80vh;
+
   resize: both;
   overflow: auto;
 `;
@@ -458,14 +475,16 @@ const NameList = () => {
       </PrizeSection>
 
       <Label htmlFor="name_list_textfield">抽獎名單</Label>
-      <Textarea
-        id="name_list_textfield"
-        ref={textareaRef}
-        type="text"
-        onKeyDown={handleKeyDown}
-        onChange={handleNameListChange}
-        value={value}
-      />
+      <TextareaDock>
+        <Textarea
+          id="name_list_textfield"
+          ref={textareaRef}
+          type="text"
+          onKeyDown={handleKeyDown}
+          onChange={handleNameListChange}
+          value={value}
+        />
+      </TextareaDock>
       <SubmitWrapper>
         <SubmitButton onClick={handleSubmit}>送出</SubmitButton>
       </SubmitWrapper>
