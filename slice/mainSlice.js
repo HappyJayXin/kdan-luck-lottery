@@ -14,8 +14,9 @@ export const mainSlice = createSlice({
     winnerList: [],
     lotteryList: [],
     allWinnerList: [],
+    excludedWinnersList: [],
 
-    isRemovedDuplicated: false,
+    isRemovedDuplicated: true,
 
     // Prize flow (B mode): configure multiple prizes, draw sequentially.
     prizeQueue: [
@@ -52,6 +53,9 @@ export const mainSlice = createSlice({
     },
     setIsRemoveDuplicated: (state, action) => {
       state.isRemovedDuplicated = action.payload;
+    },
+    setExcludedWinnersList: (state, action) => {
+      state.excludedWinnersList = action.payload;
     },
 
     addPrize(state) {
@@ -223,6 +227,7 @@ export const {
   setWinnerList,
   setAllWinnerList,
   setIsRemoveDuplicated,
+  setExcludedWinnersList,
   setAnimating,
 
   addPrize,

@@ -1,8 +1,8 @@
-import React, { useState, useRef } from 'react';
-import styled from 'styled-components';
-import { useDispatch, useSelector } from 'react-redux';
-import useUndoKey from './useUndoKey';
-import { defaultData } from './data';
+import React, { useState, useRef } from "react";
+import styled from "styled-components";
+import { useDispatch, useSelector } from "react-redux";
+import useUndoKey from "./useUndoKey";
+import { defaultData } from "./data";
 
 import {
   addPrize,
@@ -11,19 +11,20 @@ import {
   removePrize,
   setAnimating,
   setIsRemoveDuplicated,
+  setExcludedWinnersList,
   setLotteryList,
   setWinnerList,
   undoLottery,
   updatePrizeName,
   updatePrizePickOutCount,
-} from '../../slice/mainSlice';
-import { shuffle, copyTextToClipboard } from '../../utility';
+} from "../../slice/mainSlice";
+import { shuffle, copyTextToClipboard } from "../../utility";
 
 const Wrapper = styled.div`
   position: absolute;
   top: 0;
   left: -362px;
-  padding: 30px 30px 0 30px;
+  padding: 30px;
   background-color: #f8e7e4;
   height: 100vh;
   height: 100dvh;
@@ -32,9 +33,7 @@ const Wrapper = styled.div`
   border: #5a1730 2px solid;
   transition: left 0.1s 0s linear;
   box-sizing: border-box;
-
-  display: flex;
-  flex-direction: column;
+  overflow-y: auto;
 `;
 
 const ListBtn = styled.div`
@@ -45,7 +44,7 @@ const ListBtn = styled.div`
   border: #5a1730 2px solid;
   border-left: none;
   top: 120px;
-  left: ${({ isOpen }) => (isOpen ? '300px' : '0px')};
+  left: ${({ isOpen }) => (isOpen ? "300px" : "0px")};
   width: 40px;
   height: 50px;
   display: flex;
@@ -105,17 +104,14 @@ const Input = styled.input`
 `;
 
 const List = styled.div`
-  flex: 1;
-  overflow: auto;
   margin: 8px 0 0;
-  min-height: 0;
 
   ol {
     padding: 0;
   }
   li {
     color: #5a1730;
-    font-family: 'Noto Sans TC', sans-serif;
+    font-family: "Noto Sans TC", sans-serif;
     margin: 10px 30px;
   }
 `;
@@ -134,7 +130,7 @@ const ButtonGroup = styled.div`
 const BaseIconButton = styled.button`
   background: none;
   border: none;
-  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
+  cursor: ${({ disabled }) => (disabled ? "not-allowed" : "pointer")};
   font-size: 1.2rem;
   margin: 0;
   padding: 0;
@@ -150,10 +146,10 @@ const DeleteIconButton = styled(BaseIconButton)`
 `;
 
 const CopyIconButton = styled(BaseIconButton)`
-  color: ${({ disabled }) => (disabled ? '#b0b0b0' : '#6c757d')};
+  color: ${({ disabled }) => (disabled ? "#b0b0b0" : "#6c757d")};
 
   &:hover {
-    color: ${({ disabled }) => (disabled ? '#b0b0b0' : '#495057')};
+    color: ${({ disabled }) => (disabled ? "#b0b0b0" : "#495057")};
   }
 `;
 
@@ -163,16 +159,14 @@ const SubmitWrapper = styled.div`
   margin-top: 2px;
 `;
 
-
 const SubmitButton = styled.button`
   font-size: 0.875rem;
-  padding: 0.25rem 0.5rem;
+  padding: 4px 8px;
   text-align: center;
   border-radius: 8px;
-  background-color: #198754;
+  background-color: #5a1730;
   color: #ffffff;
   border: 0;
-  margin-left: 12px;
   cursor: pointer;
 `;
 
@@ -234,18 +228,18 @@ const SmallIconButton = styled.button`
   border-radius: 6px;
   border: #5a1730 1px solid;
   background: #f8e7e4;
-  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
+  cursor: ${({ disabled }) => (disabled ? "not-allowed" : "pointer")};
   opacity: ${({ disabled }) => (disabled ? 0.5 : 1)};
 `;
 
 const AddPrizeButton = styled.button`
   width: 100%;
-  margin-top: 8px;
-  border-radius: 10px;
+  margin-top: 4px;
+  border-radius: 8px;
   border: #5a1730 2px dashed;
   background: transparent;
   color: #5a1730;
-  padding: 8px;
+  padding: 4px;
   cursor: pointer;
   font-weight: bold;
 `;
@@ -260,9 +254,9 @@ const PrizeMeta = styled.div`
 const PrizeStatus = styled.span`
   font-size: 12px;
   color: ${({ variant }) => {
-    if (variant === 'active') return '#198754';
-    if (variant === 'done') return '#6c757d';
-    return '#5a1730';
+    if (variant === "active") return "#198754";
+    if (variant === "done") return "#6c757d";
+    return "#5a1730";
   }};
 `;
 
@@ -292,6 +286,7 @@ const CopyButton = ({ onCopy }) => {
 const NameList = () => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true);
   const [value, setValue] = useState(defaultData);
+  const [excludedValue, setExcludedValue] = useState("");
   const textareaRef = useRef(null);
 
   const {
@@ -300,6 +295,7 @@ const NameList = () => {
     winnerList,
     allWinnerList,
     isRemovedDuplicated,
+    excludedWinnersList,
     prizeQueue,
     activePrizeIndex,
   } = useSelector((state) => state.main);
@@ -308,12 +304,12 @@ const NameList = () => {
   const handleUndo = () => {
     if (isSidebarCollapsed) {
       if (allWinnerList.length > 0) {
-        const result = confirm('確定要復原這次抽獎結果嗎？');
+        const result = confirm("確定要復原這次抽獎結果嗎？");
         if (result) {
           dispatch(undoLottery());
         }
       } else {
-        alert('目前沒有可復原的抽獎結果');
+        alert("目前沒有可復原的抽獎結果");
       }
     }
   };
@@ -329,14 +325,14 @@ const NameList = () => {
   };
 
   const handleKeyDown = (e) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       handleSubmit();
     }
   };
 
   const handleSubmit = () => {
-    if (textareaRef.current.value.trim() !== '') {
-      const list = textareaRef.current.value.trim().split(',');
+    if (textareaRef.current.value.trim() !== "") {
+      const list = textareaRef.current.value.trim().split(",");
       const randomList = shuffle(lotteryList.concat(list));
       dispatch(setLotteryList(randomList));
     }
@@ -350,9 +346,8 @@ const NameList = () => {
     dispatch(setAnimating(e.target.checked));
   };
 
-
   const handleRemoveWinnerList = () => {
-    const result = confirm('確定要清除嗎？');
+    const result = confirm("確定要清除嗎？");
 
     if (result) {
       dispatch(setWinnerList([]));
@@ -360,7 +355,7 @@ const NameList = () => {
   };
 
   const handleRemoveLotteryList = () => {
-    const result = confirm('確定要清除嗎？');
+    const result = confirm("確定要清除嗎？");
 
     if (result) {
       dispatch(setLotteryList([]));
@@ -368,7 +363,7 @@ const NameList = () => {
   };
 
   const handleCopyWinnerList = () => {
-    const text = winnerList.join(',');
+    const text = winnerList.join(",");
     copyTextToClipboard(text);
   };
 
@@ -376,27 +371,43 @@ const NameList = () => {
     const text = allWinnerList
       .map((ele) => {
         const time = new Date(ele.timestamp).toLocaleString();
-        const count = ele.pickOutCount ? `（${ele.pickOutCount}人）` : '';
-        return `${ele.prizeName}${count}, ${time}, ${ele.winners.join(', ')}`;
+        const count = ele.pickOutCount ? `（${ele.pickOutCount}人）` : "";
+        return `${ele.prizeName}${count}, ${time}, ${ele.winners.join(", ")}`;
       })
-      .join('\n');
+      .join("\n");
     copyTextToClipboard(text);
   };
 
   const handleCopyLotteryList = () => {
-    const text = lotteryList.join(',');
+    const text = lotteryList.join(",");
+    copyTextToClipboard(text);
+  };
+
+  const handleExcludedWinnersChange = (e) => {
+    const inputValue = e.target.value;
+    setExcludedValue(inputValue);
+    const list = inputValue
+      .split(",")
+      .map((name) => name.trim())
+      .filter((name) => name !== "");
+    dispatch(setExcludedWinnersList(list));
+  };
+
+  const handleCopyAllWinnersFlat = () => {
+    const allNames = allWinnerList.flatMap((item) => item.winners);
+    const text = allNames.join(", ");
     copyTextToClipboard(text);
   };
 
   return (
-    <Wrapper style={isSidebarCollapsed ? { left: '0px' } : {}}>
+    <Wrapper style={isSidebarCollapsed ? { left: "0px" } : {}}>
       <Label>獎項設定</Label>
       <PrizeSection>
         <PrizeMeta>
-          <PrizeStatus variant={activePrizeIndex === -1 ? 'done' : 'active'}>
+          <PrizeStatus variant={activePrizeIndex === -1 ? "done" : "active"}>
             {activePrizeIndex === -1
-              ? '所有獎項已完成'
-              : `目前進行：${prizeQueue[activePrizeIndex]?.name || '-'}`}
+              ? "所有獎項已完成"
+              : `目前進行：${prizeQueue[activePrizeIndex]?.name || "-"}`}
           </PrizeStatus>
         </PrizeMeta>
         <PrizeList>
@@ -406,8 +417,8 @@ const NameList = () => {
             prizeQueue.map((prize, index) => {
               const isActive = index === activePrizeIndex;
               const isCompleted = prize.isCompleted;
-              const statusVariant = isCompleted ? 'done' : isActive ? 'active' : 'pending';
-              const statusText = isCompleted ? '已抽' : isActive ? '準備中' : '未抽';
+              const statusVariant = isCompleted ? "done" : isActive ? "active" : "pending";
+              const statusText = isCompleted ? "已抽" : isActive ? "準備中" : "未抽";
 
               return (
                 <PrizeRow key={prize.id}>
@@ -415,9 +426,7 @@ const NameList = () => {
                     <PrizeNameInput
                       type="text"
                       value={prize.name}
-                      onChange={(e) =>
-                        dispatch(updatePrizeName({ index, name: e.target.value }))
-                      }
+                      onChange={(e) => dispatch(updatePrizeName({ index, name: e.target.value }))}
                     />
                     <PrizeStatus variant={statusVariant}>{statusText}</PrizeStatus>
                   </PrizeRowTop>
@@ -453,7 +462,7 @@ const NameList = () => {
                         type="button"
                         disabled={isCompleted}
                         onClick={() => {
-                          const result = confirm('確定要刪除這個獎項嗎？');
+                          const result = confirm("確定要刪除這個獎項嗎？");
                           if (result) {
                             dispatch(removePrize(index));
                           }
@@ -470,9 +479,20 @@ const NameList = () => {
           )}
         </PrizeList>
         <AddPrizeButton type="button" onClick={() => dispatch(addPrize())}>
-          + 新增獎項
+          新增獎項
         </AddPrizeButton>
       </PrizeSection>
+
+      <Label htmlFor="excluded_winners_textfield">排除名單</Label>
+      <TextareaDock>
+        <Textarea
+          id="excluded_winners_textfield"
+          type="text"
+          onChange={handleExcludedWinnersChange}
+          value={excludedValue}
+          placeholder="以逗號分隔"
+        />
+      </TextareaDock>
 
       <Label htmlFor="name_list_textfield">抽獎名單</Label>
       <TextareaDock>
@@ -483,11 +503,13 @@ const NameList = () => {
           onKeyDown={handleKeyDown}
           onChange={handleNameListChange}
           value={value}
+          placeholder="以逗號分隔"
         />
       </TextareaDock>
       <SubmitWrapper>
         <SubmitButton onClick={handleSubmit}>送出</SubmitButton>
       </SubmitWrapper>
+
       <div>
         <input
           id="remove_duplicated_checkbox"
@@ -540,7 +562,7 @@ const NameList = () => {
         <ol>
           {allWinnerList.map((ele, index) => (
             <li key={`all_winner_${index}`}>
-              <strong>{ele.prizeName}</strong> - {ele.winners.join(', ')}
+              <strong>{ele.prizeName}</strong> - {ele.winners.join(", ")}
             </li>
           ))}
         </ol>
@@ -562,6 +584,16 @@ const NameList = () => {
             <li key={`lottery_${index}`}>{ele}</li>
           ))}
         </ol>
+
+        {/* 已中獎名單 */}
+        <Head>
+          <h4>已中獎名單</h4>
+          {allWinnerList.length > 0 && (
+            <ButtonGroup>
+              <CopyButton onCopy={handleCopyAllWinnersFlat} />
+            </ButtonGroup>
+          )}
+        </Head>
       </List>
     </Wrapper>
   );

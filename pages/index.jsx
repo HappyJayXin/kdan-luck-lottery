@@ -122,8 +122,15 @@ const ButtonBG = styled.div`
 
 export default function Home() {
   const dispatch = useDispatch();
-  const { isActive, lotteryList, allWinnerList, isRemovedDuplicated, prizeQueue, activePrizeIndex } =
-    useSelector((state) => state.main);
+  const {
+    isActive,
+    lotteryList,
+    allWinnerList,
+    isRemovedDuplicated,
+    excludedWinnersList,
+    prizeQueue,
+    activePrizeIndex,
+  } = useSelector((state) => state.main);
 
   const handleStartClick = () => {
     if (isActive) {
@@ -163,14 +170,21 @@ export default function Home() {
     if (restList.length >= 1) {
       const winners = [];
 
+      // Build combined exclusion list
+      let exclusionList = [...excludedWinnersList];
       if (isRemovedDuplicated) {
         // extract winners from allWinnerList
         const allWinnerNames = allWinnerList.flatMap((item) => item.winners);
-        restList = [...reduceArray(restList, allWinnerNames)];
+        exclusionList = [...exclusionList, ...allWinnerNames];
+      }
+
+      // Remove excluded winners from lottery pool
+      if (exclusionList.length > 0) {
+        restList = [...reduceArray(restList, exclusionList)];
       }
 
       if (restList.length === 0) {
-        alert('目前沒有可抽的人（可能全部人都已中獎），請調整名單或關閉去除重複。');
+        alert('目前沒有可抽的人（可能全部人都已中獎或被排除），請調整名單或關閉去除重複。');
         dispatch(setActive(false));
         return;
       }
