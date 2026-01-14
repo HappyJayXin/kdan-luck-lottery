@@ -332,7 +332,11 @@ const NameList = () => {
 
   const handleSubmit = () => {
     if (textareaRef.current.value.trim() !== "") {
-      const list = textareaRef.current.value.trim().split(",");
+      const list = textareaRef.current.value
+        .trim()
+        .split(",")
+        .map((name) => name.trim())
+        .filter((name) => name !== "");
       const randomList = shuffle(lotteryList.concat(list));
       dispatch(setLotteryList(randomList));
     }
@@ -372,7 +376,7 @@ const NameList = () => {
       .map((ele) => {
         const time = new Date(ele.timestamp).toLocaleString();
         const count = ele.pickOutCount ? `（${ele.pickOutCount}人）` : "";
-        return `${ele.prizeName}${count}, ${time}, ${ele.winners.join(", ")}`;
+        return `${ele.prizeName}${count}, ${time}, ${ele.winners.join(",")}`;
       })
       .join("\n");
     copyTextToClipboard(text);
@@ -395,7 +399,7 @@ const NameList = () => {
 
   const handleCopyAllWinnersFlat = () => {
     const allNames = allWinnerList.flatMap((item) => item.winners);
-    const text = allNames.join(", ");
+    const text = allNames.join(",");
     copyTextToClipboard(text);
   };
 
@@ -562,7 +566,7 @@ const NameList = () => {
         <ol>
           {allWinnerList.map((ele, index) => (
             <li key={`all_winner_${index}`}>
-              <strong>{ele.prizeName}</strong> - {ele.winners.join(", ")}
+              <strong>{ele.prizeName}</strong> - {ele.winners.join(",")}
             </li>
           ))}
         </ol>
