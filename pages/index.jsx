@@ -189,6 +189,12 @@ export default function Home() {
         return;
       }
 
+      if (restList.length < activePrize.pickOutCount) {
+        alert('抽獎名單數量不足，無法抽出預定人數。');
+        dispatch(setActive(false));
+        return;
+      }
+
       for (let index = 0; index < activePrize.pickOutCount; index++) {
         if (restList.length) {
           const luckyNum = Math.floor(Math.random() * restList.length);

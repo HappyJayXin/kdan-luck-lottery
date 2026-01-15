@@ -337,7 +337,7 @@ const NameList = () => {
         .split(",")
         .map((name) => name.trim())
         .filter((name) => name !== "");
-      const randomList = shuffle(lotteryList.concat(list));
+      const randomList = shuffle(list);
       dispatch(setLotteryList(randomList));
     }
   };
