@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import Head from 'next/head';
 import Script from 'next/script';
 import styled from 'styled-components';
@@ -132,8 +132,10 @@ export default function Home() {
     activePrizeIndex,
   } = useSelector((state) => state.main);
 
+  const isDrawingRef = useRef(false);
+
   const handleStartClick = () => {
-    if (isActive) {
+    if (isActive || isDrawingRef.current) {
       return;
     }
 
@@ -164,6 +166,7 @@ export default function Home() {
       return;
     }
 
+    isDrawingRef.current = true;
     dispatch(setActive(true));
     let restList = [...lotteryList];
 
@@ -185,12 +188,14 @@ export default function Home() {
 
       if (restList.length === 0) {
         alert('目前沒有可抽的人（可能全部人都已中獎或被排除），請調整名單或關閉去除重複。');
+        isDrawingRef.current = false;
         dispatch(setActive(false));
         return;
       }
 
       if (restList.length < activePrize.pickOutCount) {
         alert('抽獎名單數量不足，無法抽出預定人數。');
+        isDrawingRef.current = false;
         dispatch(setActive(false));
         return;
       }
@@ -222,6 +227,7 @@ export default function Home() {
     }
 
     setTimeout(() => {
+      isDrawingRef.current = false;
       dispatch(setActive(false));
       dispatch(setOpened(true));
     }, 2200);
@@ -247,12 +253,12 @@ export default function Home() {
         <Wrapper>
           <GoButton
             onClick={handleStartClick}
-            isDisabled={lotteryList.length === 0 || activePrizeIndex === -1 || prizeQueue.length === 0}
+            isDisabled={lotteryList.length === 0 || activePrizeIndex === -1 || prizeQueue.length === 0 || isActive}
           >
             START
           </GoButton>
           <ButtonBG
-            isDisabled={lotteryList.length === 0 || activePrizeIndex === -1 || prizeQueue.length === 0}
+            isDisabled={lotteryList.length === 0 || activePrizeIndex === -1 || prizeQueue.length === 0 || isActive}
           />
         </Wrapper>
         {/* <Meteors /> */}
