@@ -50,17 +50,8 @@ export const copyTextToClipboard = (text) => {
 };
 
 export const reduceArray = (array1, array2) => {
-  let newArray = [...array1];
-
-  // Remove duplicates from array2
-  array2.forEach(function (value) {
-    var index = newArray.indexOf(value);
-    if (index !== -1) {
-      newArray.splice(index, 1);
-    }
-  });
-
-  return newArray;
+  const exclusionSet = new Set(array2);
+  return array1.filter((value) => !exclusionSet.has(value));
 };
 
 export const smoothScrollTo = (element, target, duration = 500) => {

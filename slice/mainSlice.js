@@ -85,7 +85,7 @@ export const mainSlice = createSlice({
       }
 
       const numericValue = Number(pickOutCount);
-      const normalized = Number.isFinite(numericValue) && numericValue > 0 ? numericValue : 1;
+      const normalized = Number.isFinite(numericValue) && numericValue > 0 ? Math.floor(numericValue) : 1;
       state.prizeQueue[index].pickOutCount = normalized;
     },
     removePrize: (state, action) => {
